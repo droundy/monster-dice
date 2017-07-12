@@ -1,3 +1,8 @@
 .fac
 *.tum
 sides
+*.aux
+*.tex
+*.pdf
+*.log
+*~
