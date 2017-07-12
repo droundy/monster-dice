@@ -14,72 +14,84 @@ monsters = {
         'color': 'black',
         'armor': [0]*6,
         'flies': [0]*6,
+        'range': [0]*6,
     },
     'dragon': {
         'move': ['+','x','*','*','*','*'],
         'color': 'red',
         'armor': [0,1,1,1,2,2],
         'flies': [0,0,0,1,1,1],
+        'range': [1,1,1,1,1,1],
     },
     'troll': {
         'move': ['+']*6,
         'color': 'blue',
         'armor': [0,0,1,1,1,1],
         'flies': [0]*6,
+        'range': [0]*6,
     },
     'ogre': {
         'move': ['x']*6,
         'color': 'green',
         'armor': [0,0,1,1,1,1],
         'flies': [0]*6,
+        'range': [0]*6,
     },
     'griffin': {
         'move': ['x','x','x','x','x','x'],
         'color': 'brown',
         'armor': [0]*6,
         'flies': [0,0,1,1,1,1],
+        'range': [0]*6,
     },
     'basilisk': {
         'move': ['+','+','+','+','+','*'],
         'color': 'y',
         'armor': [0]*6,
         'flies': [0]*6,
+        'range': [1,1,1,1,1,1],
     },
     'swordsman': {
         'move': ['x','+','*','*','*','*'],
         'color': 'black',
         'armor': [0,0,0,1,1,1],
         'flies': [0]*6,
+        'range': [0]*6,
     },
     'mage': {
         'move': ['+','x','*','*','*','*'],
         'color': 'red',
         'armor': [0]*6,
         'flies': [0]*6,
+        'range': [1,1,1,1,1,1],
     },
     'spearman': {
         'move': ['+']*6,
         'color': 'blue',
         'armor': [0]*6,
         'flies': [0]*6,
+        'range': [1,1,1,1,1,1],
     },
     'axeman': {
         'move': ['x']*6,
         'color': 'green',
         'armor': [0]*6,
         'flies': [0]*6,
+        'range': [0]*6,
     },
     'healer': {
         'move': ['x','x','x','x','*','*'],
         'color': 'brown',
         'armor': [0]*6,
         'flies': [0]*6,
+        'range': [0]*6,
     },
     'archer': {
         'move': ['+','+','+','+','+','*'],
         'color': 'y',
         'armor': [0]*6,
         'flies': [0]*6,
+        'range': [1,1,1,1,1,1],
     },
 }
 
@@ -96,24 +108,33 @@ def plotshield(sz,color):
 
 def plotheal(sz,color):
     R = sz*.275/.5
-    x0 = .17
+    x0 = .13
     x = np.linspace(0,R+x0,100)
     dx = x[1]-x[0]
-    ytop =  np.sqrt(R**2 - (x-x0)**2) +.12
-    ybot = -np.sqrt(R**2 - (x-x0)**2) +.12
+    ytop =  np.sqrt(R**2 - (x-x0)**2) +.12+.5
+    ybot = -np.sqrt(R**2 - (x-x0)**2) +.12+.5
     i=95
     while i >= 0:
         if ybot[i] > ybot[i+1] - dx*.7:
             ybot[i] = 2*ybot[i+1] - ybot[i+2]
         i-=1
+    plt.fill_between(.0+x,ybot,ytop, facecolor=color)
+    plt.fill_between(.0-x,ybot,ytop, facecolor=color)
+
+def plotrange(sz,color):
+    R = sz*.275/.5
+    x0 = .5
+    x = np.linspace(x0-R,R+x0,100)
+    dx = x[1]-x[0]
+    ytop =  np.sqrt(R**2 - (x-x0)**2) -.5
+    ybot = -np.sqrt(R**2 - (x-x0)**2) -.5
     plt.fill_between(x,ybot,ytop, facecolor=color)
-    plt.fill_between(-x,ybot,ytop, facecolor=color)
 
 def plotwing(sz, color):
     x = np.linspace(-sz,sz,100)
     X = x/sz
-    wingtop = .5*np.sin(X*np.pi/2)**2 + .3 + .1*abs(X)
-    wingbot = wingtop - 0.3*np.sin(X*np.pi)**2 - .05 # *X
+    wingtop = .3*np.sin(X*np.pi/2)**2 + .5 + .1*abs(X)
+    wingbot = wingtop - 0.2*np.sin(X*np.pi)**2 - .05 # *X
     plt.fill_between(x,wingtop*sz/.9,wingbot*sz/.9, facecolor=color)
 
 def plotme(m, name, side):
@@ -142,15 +163,20 @@ def plotme(m, name, side):
         plotshield(.51, 'black')
         plotshield(.5, directioncolor)
     if name == 'healer' and side > 1:
-        plotheal(.4, 'red')
-        plotheal(.35, directioncolor)
+        plotheal(.35, 'red')
+        plotheal(.3, directioncolor)
+    if m['range'][side-1]:
+        plotrange(.4, 'red')
+        plotrange(.3, 'white')
+        plotrange(.2, 'red')
+        plotrange(.1, 'white')
     if m['flies'][side-1]:
         plotwing(.9, (.8,.8,.8))
     plt.text(0,0,str(side),color=m['color'],fontsize=24,
              verticalalignment='center', horizontalalignment='center')
     text = plt.text(0, -0.8, name, color=directioncolor,
                     ha='center', va='center', size=14)
-    text.set_path_effects([path_effects.Stroke(linewidth=3, foreground=m['color']),
+    text.set_path_effects([path_effects.Stroke(linewidth=1.5, foreground=m['color']),
                            path_effects.Normal()])
 for monster in monsters:
     for side in [1,2,3,4,5,6]:
