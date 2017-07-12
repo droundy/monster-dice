@@ -8,89 +8,73 @@ import matplotlib.patheffects as path_effects
 
 os.system('mkdir -p sides')
 
+blank = {
+    'move': ['x','x','x','x','*','*'],
+    'color': 'brown',
+    'armor': [0]*6,
+    'flies': [0]*6,
+    'range': [0]*6,
+    'retaliate': [0]*6,
+}
+
 monsters = {
-    'skeleton': {
+    'skeleton': {**blank,
         'move': ['x','+','*','*','*','*'],
         'color': 'black',
-        'armor': [0]*6,
-        'flies': [0]*6,
-        'range': [0]*6,
     },
-    'dragon': {
+    'dragon': {**blank,
         'move': ['+','x','*','*','*','*'],
         'color': 'red',
         'armor': [0,1,1,1,2,2],
         'flies': [0,0,0,1,1,1],
         'range': [1,1,1,1,1,1],
     },
-    'troll': {
+    'troll': {**blank,
         'move': ['+']*6,
         'color': 'blue',
         'armor': [0,0,1,1,1,1],
-        'flies': [0]*6,
-        'range': [0]*6,
     },
-    'ogre': {
+    'ogre': {**blank,
         'move': ['x']*6,
         'color': 'green',
         'armor': [0,0,1,1,1,1],
-        'flies': [0]*6,
-        'range': [0]*6,
     },
-    'griffin': {
+    'griffin': {**blank,
         'move': ['x','x','x','x','x','x'],
         'color': 'brown',
-        'armor': [0]*6,
         'flies': [0,0,1,1,1,1],
-        'range': [0]*6,
     },
-    'basilisk': {
+    'basilisk': {**blank,
         'move': ['+','+','+','+','+','*'],
         'color': 'y',
-        'armor': [0]*6,
-        'flies': [0]*6,
         'range': [1,1,1,1,1,1],
     },
-    'swordsman': {
+    'swordsman': {**blank,
         'move': ['x','+','*','*','*','*'],
         'color': 'black',
         'armor': [0,0,0,1,1,1],
-        'flies': [0]*6,
-        'range': [0]*6,
     },
-    'mage': {
+    'mage': {**blank,
         'move': ['+','x','*','*','*','*'],
         'color': 'red',
-        'armor': [0]*6,
-        'flies': [0]*6,
         'range': [1,1,1,1,1,1],
     },
-    'spearman': {
+    'spearman': {**blank,
         'move': ['+']*6,
         'color': 'blue',
-        'armor': [0]*6,
-        'flies': [0]*6,
-        'range': [1,1,1,1,1,1],
+        'retaliate': [1,1,1,1,1,1],
     },
-    'axeman': {
+    'axeman': {**blank,
         'move': ['x']*6,
         'color': 'green',
-        'armor': [0]*6,
-        'flies': [0]*6,
-        'range': [0]*6,
     },
-    'healer': {
+    'healer': {**blank,
         'move': ['x','x','x','x','*','*'],
         'color': 'brown',
-        'armor': [0]*6,
-        'flies': [0]*6,
-        'range': [0]*6,
     },
-    'archer': {
+    'archer': {**blank,
         'move': ['+','+','+','+','+','*'],
         'color': 'y',
-        'armor': [0]*6,
-        'flies': [0]*6,
         'range': [1,1,1,1,1,1],
     },
 }
@@ -131,6 +115,13 @@ def plotrange(sz,color):
     plt.fill_between(x,ybot,ytop, facecolor=color)
 
 def plotwing(sz, color):
+    x = np.linspace(-sz,sz,100)
+    X = x/sz
+    wingtop = .3*np.sin(X*np.pi/2)**2 + .5 + .1*abs(X)
+    wingbot = wingtop - 0.2*np.sin(X*np.pi)**2 - .05 # *X
+    plt.fill_between(x,wingtop*sz/.9,wingbot*sz/.9, facecolor=color)
+
+def plotretaliate(sz, color):
     x = np.linspace(-sz,sz,100)
     X = x/sz
     wingtop = .3*np.sin(X*np.pi/2)**2 + .5 + .1*abs(X)
