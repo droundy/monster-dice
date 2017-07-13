@@ -17,68 +17,80 @@ blank = {
     'retaliate': [0]*6,
 }
 
-monsters = {
-    'orc': {**blank,
-        'move': ['x','+','*','*','*','*'],
-        'color': 'black',
+monsters = [
+    {**blank,
+     'name': 'orc',
+     'move': ['x','+','*','*','*','*'],
+     'color': 'black',
     },
-    'dragon': {**blank,
-        'move': ['+','x','*','*','*','*'],
-        'color': 'red',
-        'armor': [0,1,1,1,2,2],
-        'flies': [0,0,0,1,1,1],
-        'range': [1,1,1,1,1,1],
+    {**blank,
+     'name': 'dragon',
+     'move': ['+','x','*','*','*','*'],
+     'color': 'red',
+     'armor': [0,1,1,1,2,2],
+     'flies': [0,0,0,1,1,1],
+     'range': [1,1,1,1,1,1],
     },
-    'troll': {**blank,
-        'move': ['+']*6,
-        'color': 'blue',
-        'armor': [0,0,1,1,1,1],
+    {**blank,
+     'name': 'troll',
+     'move': ['+']*6,
+     'color': 'blue',
+     'armor': [0,0,1,1,1,1],
     },
-    'ogre': {**blank,
-        'move': ['x']*6,
-        'color': 'green',
-        'armor': [0,0,1,1,1,1],
+    {**blank,
+     'name': 'ogre',
+     'move': ['x']*6,
+     'color': 'green',
+     'armor': [0,0,1,1,1,1],
     },
-    'griffin': {**blank,
-        'move': ['x','x','x','x','x','x'],
-        'color': 'brown',
-        'flies': [0,0,1,1,1,1],
+    {**blank,
+     'name': 'griffin',
+     'move': ['x','x','x','x','x','x'],
+     'color': 'brown',
+     'flies': [0,0,1,1,1,1],
     },
-    'basilisk': {**blank,
-        'move': ['+','+','+','+','+','*'],
-        'color': 'y',
-        'range': [1,1,1,1,1,1],
+    {**blank,
+     'name': 'basilisk',
+     'move': ['+','+','+','+','+','*'],
+     'color': 'y',
+     'range': [1,1,1,1,1,1],
     },
-    'swordsman': {**blank,
-        'move': ['x','+','*','*','*','*'],
-        'color': 'black',
-        'armor': [0,0,0,1,1,1],
-        'retaliate': [1,1,1,1,1,1],
+    {**blank,
+     'name': 'swordsman',
+     'move': ['x','+','*','*','*','*'],
+     'color': 'black',
+     'armor': [0,0,0,1,1,1],
+     'retaliate': [1,1,1,1,1,1],
     },
-    'mage': {**blank,
-        'move': ['+','x','*','*','*','*'],
-        'color': 'red',
-        'range': [1,1,1,1,1,1],
+    {**blank,
+     'name': 'mage',
+     'move': ['+','x','*','*','*','*'],
+     'color': 'red',
+     'range': [1,1,1,1,1,1],
     },
-    'spearman': {**blank,
-        'move': ['+']*6,
-        'color': 'blue',
-        'retaliate': [1,1,1,1,1,1],
+    {**blank,
+     'name': 'spearman',
+     'move': ['+']*6,
+     'color': 'blue',
+     'retaliate': [1,1,1,1,1,1],
     },
-    'axeman': {**blank,
-        'move': ['x']*6,
-        'color': 'green',
+    {**blank,
+     'name': 'axeman',
+     'move': ['x']*6,
+     'color': 'green',
     },
-    'healer': {**blank,
-        'move': ['x','x','x','x','*','*'],
-        'color': 'brown',
+    {**blank,
+     'name': 'healer',
+     'move': ['x','x','x','x','*','*'],
+     'color': 'brown',
     },
-    'archer': {**blank,
-        'move': ['+','+','+','+','+','*'],
-        'color': 'y',
-        'range': [1,1,1,1,1,1],
+    {**blank,
+     'name': 'archer',
+     'move': ['+','+','+','+','+','*'],
+     'color': 'y',
+     'range': [1,1,1,1,1,1],
     },
-}
+]
 
 
 imsz = 1.25
@@ -160,7 +172,8 @@ def plotteleport(sz, x, y):
     Y = y - (X-(x+sz/2))
     plt.plot(X, Y, 'k-')
 
-def plotme(m, name, side):
+def plotme(m, side):
+    name = m['name']
     plt.figure(figsize=(2,2))
     plt.xlim(-imsz,imsz)
     plt.ylim(-imsz,imsz)
@@ -209,9 +222,9 @@ def plotme(m, name, side):
 for monster in monsters:
     for side in [1,2,3,4,5,6]:
         # fac.write('| xelatex {}-{}\n\n'.format(monster,side))
-        plotme(monsters[monster], monster, side)
-        plt.savefig('sides/{}-{}.pdf'.format(monster,side))
-        plt.savefig('sides/{}-{}.png'.format(monster,side), dpi=94)
+        plotme(monster, side)
+        plt.savefig('sides/{}-{}.pdf'.format(monster['name'],side))
+        plt.savefig('sides/{}-{}.png'.format(monster['name'],side), dpi=94)
 
 
 with open('paper.tex'.format(monster,side),'w') as f:
@@ -225,7 +238,8 @@ with open('paper.tex'.format(monster,side),'w') as f:
 ''')
     for monster in monsters:
         for side in [1,2,3,4,5,6]:
-            f.write(r'\includegraphics[width=0.5in]{{sides/{}-{}}}'.format(monster,side))
+            f.write(r'\includegraphics[width=0.5in]{{sides/{}-{}}}'
+                    .format(monster['name'],side))
         f.write('\\\\\n')
     f.write(r'''
 \end{document}
