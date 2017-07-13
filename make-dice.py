@@ -18,7 +18,7 @@ blank = {
 }
 
 monsters = {
-    'skeleton': {**blank,
+    'orc': {**blank,
         'move': ['x','+','*','*','*','*'],
         'color': 'black',
     },
@@ -53,6 +53,7 @@ monsters = {
         'move': ['x','+','*','*','*','*'],
         'color': 'black',
         'armor': [0,0,0,1,1,1],
+        'retaliate': [1,1,1,1,1,1],
     },
     'mage': {**blank,
         'move': ['+','x','*','*','*','*'],
@@ -114,19 +115,50 @@ def plotrange(sz,color):
     ybot = -np.sqrt(R**2 - (x-x0)**2) -.5
     plt.fill_between(x,ybot,ytop, facecolor=color)
 
-def plotwing(sz, color):
+def plotwing(sz, x0, y0, color):
     x = np.linspace(-sz,sz,100)
-    X = x/sz
-    wingtop = .3*np.sin(X*np.pi/2)**2 + .5 + .1*abs(X)
-    wingbot = wingtop - 0.2*np.sin(X*np.pi)**2 - .05 # *X
-    plt.fill_between(x,wingtop*sz/.9,wingbot*sz/.9, facecolor=color)
+    X = abs(x/sz)
+    wingtop = y0 + 0.8*(1 + 4*X - np.sqrt((4*X)**2 + 1))
+    wingbot = wingtop - 0.3*(.2+X)*np.sqrt(1-X)
+    plt.fill_between(1.1*x+x0,wingtop*sz,wingbot*sz, facecolor=color)
+    plt.fill_between(.9*x+x0,.8*wingtop*sz,.8*wingbot*sz, facecolor=color)
+    plt.fill_between(.8*x+x0,.65*wingtop*sz,.65*wingbot*sz, facecolor=color)
 
 def plotretaliate(sz, color):
-    x = np.linspace(-sz,sz,100)
-    X = x/sz
-    wingtop = .3*np.sin(X*np.pi/2)**2 + .5 + .1*abs(X)
-    wingbot = wingtop - 0.2*np.sin(X*np.pi)**2 - .05 # *X
-    plt.fill_between(x,wingtop*sz/.9,wingbot*sz/.9, facecolor=color)
+    theta = np.linspace(0, 0.8*2*np.pi, 200)
+    r = np.zeros_like(theta) + sz/2
+    plt.plot(r*np.cos(theta), r*np.sin(theta), '-', color=color, lw=3)
+    theta = np.linspace(0.7*2*np.pi, 0.8*2*np.pi, 50)
+    r = sz/2*(1 + (theta/theta.max()-1)*3)
+    plt.plot(r*np.cos(theta), r*np.sin(theta), '-', color=color, lw=3)
+    theta = np.linspace(0.71*2*np.pi, 0.8*2*np.pi, 50)
+    r = sz/2*(1 - (theta/theta.max()-1)*3)
+    plt.plot(r*np.cos(theta), r*np.sin(theta), '-', color=color, lw=3)
+
+def plotpow(sz, x, y):
+    theta = np.linspace(0, 2*np.pi, 21)
+    r = np.zeros_like(theta) + sz/2
+    r[::2] /= 2;
+    plt.plot(x+.6*r*np.cos(theta), y+.6*r*np.sin(theta), '-', color=(1,1,0))
+    plt.plot(x+.8*r*np.cos(theta), y+.8*r*np.sin(theta), '-', color='orange')
+    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), 'r-')
+
+def plotteleport(sz, x, y):
+    theta = np.linspace(0, 2*np.pi, 201)
+    r = np.zeros_like(theta)+sz/5
+    plt.plot(x+sz/2+r*np.cos(theta),y+r*np.sin(theta), '-', color='white')
+    plt.plot(x-sz/2+r*np.cos(theta),y+r*np.sin(theta), '-', color='white')
+    plt.plot(x+sz/2+r*np.cos(theta),y+r*np.sin(theta), 'k:')
+    plt.plot(x-sz/2+r*np.cos(theta),y+r*np.sin(theta), 'k:')
+    X = np.linspace(x-sz/2,x+sz/2,10)
+    Y = np.zeros_like(X)+y
+    plt.plot(X, Y, 'k-')
+    X = np.linspace(x+sz/4,x+sz/2,10)
+    Y = y + (X-(x+sz/2))
+    plt.plot(X, Y, 'k-')
+    X = np.linspace(x+sz/4,x+sz/2,10)
+    Y = y - (X-(x+sz/2))
+    plt.plot(X, Y, 'k-')
 
 def plotme(m, name, side):
     plt.figure(figsize=(2,2))
@@ -156,13 +188,18 @@ def plotme(m, name, side):
     if name == 'healer' and side > 1:
         plotheal(.35, 'red')
         plotheal(.3, directioncolor)
+    if name == 'mage' and side > 2:
+        plotpow(.6, -.5, -.5)
+        plotteleport(.6, 0, .55)
     if m['range'][side-1]:
         plotrange(.4, 'red')
         plotrange(.3, 'white')
         plotrange(.2, 'red')
         plotrange(.1, 'white')
     if m['flies'][side-1]:
-        plotwing(.9, (.8,.8,.8))
+        plotwing(.9, 0, 0.3, (.8,.8,.6))
+    if m['retaliate'][side-1]:
+        plotretaliate(.6, 'red')
     plt.text(0,0,str(side),color=m['color'],fontsize=24,
              verticalalignment='center', horizontalalignment='center')
     text = plt.text(0, -0.8, name, color=directioncolor,
