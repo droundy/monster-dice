@@ -8,6 +8,8 @@ import matplotlib.patheffects as path_effects
 
 os.system('mkdir -p sides')
 
+light_colors = ['y', 'yellow', 'white']
+
 blank = {
     'move': ['x','x','x','x','*','*'],
     'color': 'brown',
@@ -40,7 +42,7 @@ monsters = [
     {**blank,
      'name': 'griffin',
      'move': 'xxFxxx',
-     'color': 'brown',
+     'color': 'white',
     },
     {**blank,
      'name': 'basilisk',
@@ -71,7 +73,7 @@ monsters = [
     {**blank,
      'name': 'healer',
      'move': 'xHxx**',
-     'color': 'brown',
+     'color': 'white',
     },
     {**blank,
      'name': 'archer',
@@ -89,7 +91,7 @@ actions = [
       'sides': 'XPXxxX', },
     { 'color': 'yellow',
       'sides': '+#+2P3', },
-    { 'color': 'brown',
+    { 'color': 'white',
       'sides': 'xxFPXF', },
     { 'color': 'red',
       'sides': '2@*FPS', },
@@ -230,7 +232,7 @@ def plotteleport(sz, x, y):
 
 def symbol(tok, rad, x, y, backcolor):
     color = 'white'
-    if backcolor in ['y', 'yellow']:
+    if backcolor in light_colors:
         color = 'black'
     if tok == 'P':
         plotpow(rad,x,y, backcolor)
@@ -294,7 +296,7 @@ def positions(side):
     if side == 1:
         return [(0,0,f*sz)]
     if side == 2:
-        return [(sz/4,sz/4,f*sz/np.sqrt(2)), (-sz/4,-sz/4,f*sz/np.sqrt(2))]
+        return [(sz/4,sz/4,f**2*sz/np.sqrt(2)), (-sz/4,-sz/4,f**2*sz/np.sqrt(2))]
     if side == 3:
         return [(sz/4,-sz/4,f*sz/2), (-sz/4,-sz/4,f*sz/2), (0,sz/4,f*sz/2)]
     if side == 4:
@@ -325,7 +327,7 @@ def plotme(m, side):
     plt.ylim(-imsz,imsz)
     plt.gca().set_position([0, 0, 1, 1])
     directioncolor = 'white'
-    if m['color'] in ['y', 'yellow']:
+    if m['color'] in light_colors:
         directioncolor = 'black'
     plt.gca().set_facecolor(m['color'])
     for i in range(side):
@@ -370,6 +372,9 @@ with open('paper.tex'.format(monster,side),'w') as f:
                     .format(monster['name'],side))
         f.write('\\\\\n\\vspace{-2pt}')
     for action in actions:
+        for side in [1,2,3,4,5,6]:
+            f.write(r'\includegraphics[width=0.5in]{{sides/{}-{}}}'
+                    .format(action['color'],side))
         for side in [1,2,3,4,5,6]:
             f.write(r'\includegraphics[width=0.5in]{{sides/{}-{}}}'
                     .format(action['color'],side))
