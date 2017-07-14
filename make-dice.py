@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patheffects as path_effects
 
 os.system('mkdir -p sides')
+os.system('mkdir -p upload')
 
 light_colors = ['y', 'yellow', 'white']
 
@@ -26,7 +27,7 @@ monsters = [
     },
     {**blank,
      'name': 'dragon',
-     'move': '+A*RWf',
+     'move': '*ARWAf',
      'color': 'red',
     },
     {**blank,
@@ -56,7 +57,7 @@ monsters = [
     },
     {**blank,
      'name': 'mage',
-     'move': '+R*F*B',
+     'move': '+R*FB*',
      'color': 'red',
      'range': [1,1,1,1,1,1],
     },
@@ -100,6 +101,48 @@ actions = [
 imsz = 1.25
 safesz = 1.0
 lw = .25
+
+def colortest(name, colors):
+    plt.close('all')
+    plt.figure(figsize=(2,2))
+    plt.xlim(-imsz,imsz)
+    plt.ylim(-imsz,imsz)
+    plt.gca().set_position([0, 0, 1, 1])
+    plt.gca().set_facecolor('white')
+    farleft = np.linspace(-1,-.5,2)*imsz
+    left = np.linspace(-.5,0,2)*imsz
+    farright = np.linspace(1,.5,2)*imsz
+    right = np.linspace(.5,0,2)*imsz
+    top = [imsz,imsz]
+    middle = [0,0]
+    bottom = [-imsz,-imsz]
+    plt.fill_between(farleft,middle,top, facecolor=colors[0])
+    plt.fill_between(left,middle,top, facecolor=colors[1])
+    plt.fill_between(right,middle,top, facecolor=colors[2])
+    plt.fill_between(farright,middle,top, facecolor=colors[3])
+    plt.fill_between(farleft,middle,bottom, facecolor=colors[4])
+    plt.fill_between(left,middle,bottom, facecolor=colors[5])
+    plt.fill_between(right,middle,bottom, facecolor=colors[6])
+    plt.fill_between(farright,middle,bottom, facecolor=colors[7])
+    text = plt.text(0, 0, name, color='white',
+                    ha='center', va='center', size=24)
+    plt.savefig('upload/test-{}.png'.format(name), dpi=94)
+
+colortest('greens', [(0,1,0), (0,0.9,0), (0,0.8,0), (0,0.6,0),
+                     (0,.95,0), (0,0.85,0), (0,0.7,0), (0,0.5,0),
+])
+colortest('blues', [(0,0,1), (0,0,0.9), (0,0,0.8), (0,0,0.7),
+                     (0,0,.95), (0,0,0.85), (0,0,0.75), (0,0,0.65),
+])
+colortest('reds', [(1,0,0), (0.9,0,0), (0.8,0,0), (0.7,0,0),
+                     (.95,0,0), (0.85,0,0), (0.75,0,0), (0.65,0,0),
+])
+colortest('yellows', [(1,1,0), 'yellow', (0.9,0.9,0), (0.8,0.8,0),
+                     (.9,1,0), (1,0.9,0), (0.7,.7,0), (0.6,0.6,0),
+])
+colortest('purples', ['purple', (1,0,1), (0.9,0,1), (0.8,0,1),
+                     (.7,0,1), (.6,0,1), (0.5,0,1), (0.4,0,1),
+])
 
 def plotshield(sz,x0,y0,color):
     sz *= .8 # shrink a bit vs original design
@@ -296,12 +339,12 @@ def positions(side):
     if side == 1:
         return [(0,0,f*sz)]
     if side == 2:
-        return [(sz/4,sz/4,f**2*sz/np.sqrt(2)), (-sz/4,-sz/4,f**2*sz/np.sqrt(2))]
+        return [(-sz/4,-sz/4,sz/2), (sz/4,sz/4,sz/2)]
     if side == 3:
-        return [(sz/4,-sz/4,f*sz/2), (-sz/4,-sz/4,f*sz/2), (0,sz/4,f*sz/2)]
+        return [(-sz/4,-sz/4,f*sz/2), (sz/4,-sz/4,f*sz/2), (0,sz/4,f*sz/2)]
     if side == 4:
-        return [(sz/4,-sz/4,f*sz/2), (-sz/4,-sz/4,f*sz/2),
-                (sz/4,sz/4,f*sz/2), (-sz/4,sz/4,f*sz/2)]
+        return [(-sz/4,sz/4,f**2*sz/2), (-sz/4,-sz/4,f**2*sz/2),
+                (sz/4,-sz/4,f**2*sz/2), (sz/4,sz/4,f**2*sz/2)]
     if side == 5:
         p = []
         z = 0.6
@@ -312,6 +355,21 @@ def positions(side):
         # return [(x,-x,1/np.sqrt(2)), (-x,-x,1/np.sqrt(2)),
         #         (x,x,1/np.sqrt(2)), (-x,x,1/np.sqrt(2)), (0,0,1/np.sqrt(2))]
     if side == 6:
+        f = 1 # np.sqrt(f)
+        return [(-sz/3, sz/5, f*sz/3),
+                (-sz/3,-sz/5, f*sz/3),
+                 (    0,-sz/3, f*sz/3),
+                ( sz/3,-sz/5, f*sz/3),
+                ( sz/3, sz/5, f*sz/3),
+                (    0, sz/3, f*sz/3),
+        ]
+        return [( sz/3,-sz/3, f*sz/3),
+                (    0,-sz/3, f*sz/3),
+                (-sz/3,- sz/3, f*sz/3),
+                (sz/3,-sz/3, f*sz/3),
+                (sz/3,    0, f*sz/3),
+                (sz/3, sz/3, f*sz/3),
+        ]
         z = 0.5
         r = sz/2 - z/2
         p = [(0,0,(sz-2*z))]
@@ -344,6 +402,7 @@ for monster in monsters:
         plotme(monster, side)
         plt.savefig('sides/{}-{}.pdf'.format(monster['name'],side))
         plt.savefig('sides/{}-{}.png'.format(monster['name'],side), dpi=94)
+        plt.savefig('upload/{}-{}[2].png'.format(monster['name'],side), dpi=94)
 
 for action in actions:
     for side in range(1,7):
@@ -356,27 +415,35 @@ for action in actions:
         for x,y,rad in positions(side):
             symbol(action['sides'][side-1],rad,x,y,action['color'])
         plt.savefig('sides/{}-{}.png'.format(action['color'],side), dpi=94)
+        plt.savefig('upload/{}-{}[2].png'.format(action['color'],side), dpi=94)
 
 with open('paper.tex'.format(monster,side),'w') as f:
     f.write(r'''\documentclass[11pt]{article}
 
 \usepackage{graphicx}
 \usepackage{lmodern}
+\usepackage{fullpage}
 
 \begin{document}
 \noindent
 ''')
+    i = 0
     for monster in monsters:
+        if not (i & 1):
+            f.write(r'\hspace{-0.5in}')
         for side in [1,2,3,4,5,6]:
-            f.write(r'\includegraphics[width=0.5in]{{sides/{}-{}}}'
+            f.write(r'\includegraphics[width=0.625in]{{sides/{}-{}}}'
                     .format(monster['name'],side))
-        f.write('\\\\\n\\vspace{-2pt}')
+        if i & 1:
+            f.write('\\\\\n\\vspace{-2pt}')
+        i += 1
     for action in actions:
+        f.write(r'\hspace{-0.5in}')
         for side in [1,2,3,4,5,6]:
-            f.write(r'\includegraphics[width=0.5in]{{sides/{}-{}}}'
+            f.write(r'\includegraphics[width=0.625in]{{sides/{}-{}}}'
                     .format(action['color'],side))
         for side in [1,2,3,4,5,6]:
-            f.write(r'\includegraphics[width=0.5in]{{sides/{}-{}}}'
+            f.write(r'\includegraphics[width=0.625in]{{sides/{}-{}}}'
                     .format(action['color'],side))
         f.write('\\\\\n\\vspace{-2pt}')
     f.write(r'''
