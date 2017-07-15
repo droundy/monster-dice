@@ -43,7 +43,7 @@ monsters = [
     {**blank,
      'name': 'griffin',
      'move': 'xxFxxx',
-     'color': 'white',
+     'color': 'orange',
     },
     {**blank,
      'name': 'basilisk',
@@ -58,7 +58,7 @@ monsters = [
     {**blank,
      'name': 'mage',
      'move': '+R*FB*',
-     'color': 'red',
+     'color': 'purple',
      'range': [1,1,1,1,1,1],
     },
     {**blank,
@@ -86,15 +86,32 @@ monsters = [
 actions = [
     { 'color': 'black',
       'sides': '**PX#@', },
+    { 'color': 'black',
+      'sides': '**PX#@', },
+
     { 'color': 'blue',
       'sides': 'P+##+#', },
+    { 'color': 'blue',
+      'sides': 'P+##+#', },
+
     { 'color': 'green',
       'sides': 'XPXxxX', },
+    { 'color': 'green',
+      'sides': 'XPXxxX', },
+
     { 'color': 'yellow',
       'sides': '+#+2P3', },
+    { 'color': 'yellow',
+      'sides': '+#+2P3', },
+
+    { 'color': 'orange',
+      'sides': 'xxFPXF', },
     { 'color': 'white',
       'sides': 'xxFPXF', },
+
     { 'color': 'red',
+      'sides': '2@*FPS', },
+    { 'color': 'purple',
       'sides': '2@*FPS', },
 ]
 
@@ -131,17 +148,20 @@ def colortest(name, colors):
 colortest('greens', [(0,1,0), (0,0.9,0), (0,0.8,0), (0,0.6,0),
                      (0,.95,0), (0,0.85,0), (0,0.7,0), (0,0.5,0),
 ])
-colortest('blues', [(0,0,1), (0,0,0.9), (0,0,0.8), (0,0,0.7),
-                     (0,0,.95), (0,0,0.85), (0,0,0.75), (0,0,0.65),
-])
-colortest('reds', [(1,0,0), (0.9,0,0), (0.8,0,0), (0.7,0,0),
-                     (.95,0,0), (0.85,0,0), (0.75,0,0), (0.65,0,0),
-])
 colortest('yellows', [(1,1,0), 'yellow', (0.9,0.9,0), (0.8,0.8,0),
                      (.9,1,0), (1,0.9,0), (0.7,.7,0), (0.6,0.6,0),
 ])
 colortest('purples', ['purple', (1,0,1), (0.9,0,1), (0.8,0,1),
                      (.7,0,1), (.6,0,1), (0.5,0,1), (0.4,0,1),
+])
+colortest('oranges', ['orange', (1,.5,0), (1,.6,0), (1,.7,0),
+                     (1,.4,0), (1,.3,0), (1,0.2,0), (.8,.4,0),
+])
+colortest('blues', [(0,0,1), (0,0,0.9), (0,0,0.8), (0,0,0.7),
+                     (0,0,.95), (0,0,0.85), (0,0,0.75), (0,0,0.65),
+])
+colortest('reds', [(1,0,0), (0.9,0,0), (0.8,0,0), (0.7,0,0),
+                     (.95,0,0), (0.85,0,0), (0.75,0,0), (0.65,0,0),
 ])
 
 def plotshield(sz,x0,y0,color):
@@ -151,7 +171,11 @@ def plotshield(sz,x0,y0,color):
     yshield = y0 + sz*(.5 - .6*(np.sqrt(abs(1-X**8))) + 0.5*(abs(X)-1))
     plt.fill_between(x,yshield,y0+sz/2, facecolor=color)
 
-def plotheal(sz,x00,y00,color):
+def plotheal(sz,x,y,color):
+    plt.fill_between([x+sz/2, x-sz/2], [y-sz/6]*2, [y+sz/6]*2,facecolor=color)
+    plt.fill_between([x+sz/6, x-sz/6], [y-sz/2]*2, [y+sz/2]*2,facecolor=color)
+
+def plotheart(sz,x00,y00,color):
     R = sz*.275/.5
     x0 = .4*sz
     x = np.linspace(-R-x0,R+x0,200)
@@ -315,7 +339,7 @@ def symbol(tok, rad, x, y, backcolor):
         plotretaliate(rad,x,y, color)
     elif tok == 'H':
         gridtwo(rad,x,y, color, 1)
-        plotheal(0.3*rad,x,y, color)
+        plotheal(0.3*rad,x,y, 'red')
     elif tok == 'A':
         plotshield(rad,x,y, color)
     elif tok == 'S':
@@ -377,6 +401,11 @@ def positions(side):
             p.append((r*np.sin(i*2*np.pi/5), r*np.cos(i*2*np.pi/5), z))
         return p
 
+def proper_color(color):
+    if color == 'orange':
+        return (1, 0.4, 0)
+    return color
+
 def plotme(m, side):
     name = m['name']
     plt.close('all')
@@ -387,14 +416,15 @@ def plotme(m, side):
     directioncolor = 'white'
     if m['color'] in light_colors:
         directioncolor = 'black'
-    plt.gca().set_facecolor(m['color'])
+    plt.gca().set_facecolor(proper_color(m['color']))
     for i in range(side):
         x,y,rad = positions(side)[i]
         symbol(m['move'][i],rad,x,y,m['color'])
     for w in np.arange(0.03, .9, 0.03):
         text = plt.text(0, 0, name, color=directioncolor,
                         ha='center', va='center', size=14)
-        text.set_path_effects([path_effects.Stroke(linewidth=1/w, alpha=w, foreground=m['color']),
+        text.set_path_effects([path_effects.Stroke(linewidth=1/w, alpha=w,
+                                                   foreground=proper_color(m['color'])),
                            path_effects.Normal()])
 for monster in monsters:
     for side in [1,2,3,4,5,6]:
@@ -404,6 +434,7 @@ for monster in monsters:
         plt.savefig('sides/{}-{}.png'.format(monster['name'],side), dpi=94)
         plt.savefig('upload/{}-{}[2].png'.format(monster['name'],side), dpi=94)
 
+already_done = set({})
 for action in actions:
     for side in range(1,7):
         plt.close('all')
@@ -411,11 +442,15 @@ for action in actions:
         plt.xlim(-imsz,imsz)
         plt.ylim(-imsz,imsz)
         plt.gca().set_position([0, 0, 1, 1])
-        plt.gca().set_facecolor(action['color'])
+        plt.gca().set_facecolor(proper_color(action['color']))
         for x,y,rad in positions(side):
             symbol(action['sides'][side-1],rad,x,y,action['color'])
         plt.savefig('sides/{}-{}.png'.format(action['color'],side), dpi=94)
-        plt.savefig('upload/{}-{}[2].png'.format(action['color'],side), dpi=94)
+        if action['color'] in already_done:
+            plt.savefig('upload/{}-{}[2].png'.format(action['color'],side), dpi=94)
+        else:
+            plt.savefig('upload/{}-{}[1].png'.format(action['color'],side), dpi=94)
+    already_done.add(action['color'])
 
 with open('paper.tex'.format(monster,side),'w') as f:
     f.write(r'''\documentclass[11pt]{article}
@@ -438,14 +473,14 @@ with open('paper.tex'.format(monster,side),'w') as f:
             f.write('\\\\\n\\vspace{-2pt}')
         i += 1
     for action in actions:
-        f.write(r'\hspace{-0.5in}')
+        if not (i & 1):
+            f.write(r'\hspace{-0.5in}')
         for side in [1,2,3,4,5,6]:
             f.write(r'\includegraphics[width=0.625in]{{sides/{}-{}}}'
                     .format(action['color'],side))
-        for side in [1,2,3,4,5,6]:
-            f.write(r'\includegraphics[width=0.625in]{{sides/{}-{}}}'
-                    .format(action['color'],side))
-        f.write('\\\\\n\\vspace{-2pt}')
+        if i & 1:
+            f.write('\\\\\n\\vspace{-2pt}')
+        i += 1
     f.write(r'''
 \end{document}
 
