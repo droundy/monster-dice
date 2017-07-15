@@ -1,7 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 
-import glob, os, string, numpy
+import glob, os, string, numpy, json
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as path_effects
@@ -13,7 +13,7 @@ fac = open('.fac','w');
 for monster in dice.monsters:
     fac.write('''| python3 die.py monster {}
 c .pyc
-'''.format(repr(repr(monster))))
+'''.format(repr(json.dumps(monster, sort_keys=True))))
 
 for c in dice.colortests:
     fac.write('''| python3 die.py colortest {}
@@ -23,7 +23,7 @@ c .pyc
 for action in dice.actions:
     fac.write('''| python3 die.py action {}
 c .pyc
-'''.format(repr(repr(action))))
+'''.format(repr(json.dumps(action, sort_keys=True))))
 
 with open('paper.tex','w') as f:
     f.write(r'''\documentclass[11pt]{article}
