@@ -1,3 +1,4 @@
 | python3 make-dice.py
+> .fac
 
 | pdflatex paper.tex

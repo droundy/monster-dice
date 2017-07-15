@@ -7,3 +7,4 @@ sides
 *.log
 *~
 upload
+__pycache__
