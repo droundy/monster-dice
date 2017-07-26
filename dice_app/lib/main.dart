@@ -31,6 +31,30 @@ TableRow _die_row(String name) {
   ]);
 }
 
+Table _monster_table() {
+  var rows = [];
+  var total = [];
+  all_monsters.forEach((name,moves) {
+    total.add(new Square(new Monster(name), (a) {}));
+    if (total.length == 6) {
+      rows.add(new TableRow(children: total));
+      total = [];
+    }
+  });
+  return new Table(
+      children: rows,
+      border: new TableBorder.all(width: 3.0));
+}
+
+              // new Table(
+              //     children: <TableRow>[
+              //       _die_row('red'),
+              //       _die_row('green'),
+              //       _die_row('blue'),
+              //       _die_row('purple'),
+              //       _die_row('black'),
+              //     ],
+
 class Monster {
   String name;
   int hp;
@@ -59,6 +83,9 @@ class Monster {
     }
     return true;
   }
+  bool legalAttack(int newx, int newy) {
+    return legalMove(newx, newy);
+  }
 }
 
 class Board extends StatefulWidget {
@@ -75,10 +102,19 @@ class _BoardState extends State<Board> {
   }
   void _handleMonster(Monster m, int x, int y) {
     setState(() {
-      monsters.remove(m);
-      m.x = x;
-      m.y = y;
-      monsters.add(m);
+      try {
+        var target = monsters.singleWhere((m) => m.x == x && m.y == y);
+        target.hp -= 1;
+        if (target.hp == 0) {
+          monsters.removeWhere((m) => m.x == x && m.y == y);
+        }
+        target.moves.removeLast();
+      } catch(e) {
+        monsters.remove(m);
+        m.x = x;
+        m.y = y;
+        monsters.add(m);
+      }
     });
   }
 
@@ -102,29 +138,15 @@ class _BoardState extends State<Board> {
         constraints: new BoxConstraints.expand(),
         child: new Column(
             children: <Widget>[
-              new Table(children: <TableRow>[new TableRow(children: squares[0]),
+              new Table(children: <TableRow>[
+                new TableRow(children: squares[0]),
                 new TableRow(children: squares[1]),
                 new TableRow(children: squares[2]),
-                new TableRow(children: squares[3])],
+                new TableRow(children: squares[3]),
+                new TableRow(children: squares[4]),
+                new TableRow(children: squares[5])],
                   border: new TableBorder.all(width: 3.0),),
-              new Table(
-                  children: <TableRow>[
-                    new TableRow(children: <Widget>[
-                      new Square(new Monster('mage'), _ignoreMonster),
-                      new Square(new Monster('archer'), _ignoreMonster),
-                      new Square(new Monster('swordsman'), _ignoreMonster),
-                      new Square(new Monster('healer'), _ignoreMonster),
-                      new Square(new Monster('axeman'), _ignoreMonster),
-                      new Square(new Monster('spearman'), _ignoreMonster),
-                    ]),
-                    _die_row('red'),
-                    _die_row('green'),
-                    _die_row('blue'),
-                    _die_row('purple'),
-                    _die_row('black'),
-                  ],
-                  border: new TableBorder.all(width: 3.0),
-                        ),
+              _monster_table(),
             ]));
   }
 }
@@ -149,6 +171,9 @@ class Square extends StatelessWidget {
   bool _monsterMoveOk(Monster mon) {
     return mon.legalMove(x, y);
   }
+  bool _monsterAttackOk(Monster mon) {
+    return mon.legalAttack(x, y);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +189,12 @@ class Square extends StatelessWidget {
     }
     return new Draggable<Monster>(
         data: monster,
-        child: new Image.asset('images/${monster.name}-${monster.hp}.png'),
+        child: new DragTarget<Monster>(
+            onAccept: _handleMonster,
+            onWillAccept: _monsterAttackOk,
+            builder: (BuildContext context, List<Monster> data, List<dynamic> rejected) {
+          return new Image.asset('images/${monster.name}-${monster.hp}.png');
+        }),
         childWhenDragging: background,
         feedback: new Container(
             width: 50.0,
