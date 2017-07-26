@@ -49,6 +49,17 @@ class Board extends StatefulWidget {
 class _BoardState extends State<Board> {
   List<Monster> monsters = [];
 
+  void _ignoreMonster(Monster m, int x, int y) {
+  }
+  void _handleMonster(Monster m, int x, int y) {
+    setState(() {
+      monsters.remove(m);
+      m.x = x;
+      m.y = y;
+      monsters.add(m);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance
@@ -61,52 +72,79 @@ class _BoardState extends State<Board> {
     for (var i=0;i<6;i++) {
       squares[i] = new List(6);
       for (var j=0;j<6;j++) {
-        squares[i][j] = new Square.empty(i + j & 1 == 1);
+        squares[i][j] = new Square.empty(i,j, _handleMonster);
       }
     }
-    monsters.forEach((m) => squares[m.x][m.y] = new Square(m.name, m.hp));
-    return new Center(
-        // Center is a layout widget. It takes a single child and
-        // positions it in the middle of the parent.
+    monsters.forEach((m) => squares[m.x][m.y] = new Square(m, _handleMonster));
+    return new ConstrainedBox(
+        constraints: new BoxConstraints.expand(),
         child: new Column(
-                          children: <Widget>[
-                                             new Table(children: <TableRow>[new TableRow(children: squares[0]),
-                                                                            new TableRow(children: squares[1]),
-                                                                            new TableRow(children: squares[2]),
-                                                                            new TableRow(children: squares[3])],
-                                                       border: new TableBorder.all(width: 3.0),),
-                                             new Table(
-                                                       children: <TableRow>[_die_row('red'),
-                                                                            _die_row('green'),
-                                                                            _die_row('blue'),
-                                                                            _die_row('purple'),
-                                                                            _die_row('black'),
-                                                                            ],
-                                                       border: new TableBorder.all(width: 3.0),
-                                                       ),
-                                             ],
-                          ));
+            children: <Widget>[
+              new Table(children: <TableRow>[new TableRow(children: squares[0]),
+                new TableRow(children: squares[1]),
+                new TableRow(children: squares[2]),
+                new TableRow(children: squares[3])],
+                  border: new TableBorder.all(width: 3.0),),
+              new Table(
+                  children: <TableRow>[
+                    new TableRow(children: <Widget>[
+                      new Square(new Monster('mage',-1,-1), _ignoreMonster),
+                      new Square(new Monster('archer',-1,-1), _ignoreMonster),
+                      new Square(new Monster('swordsman',-1,-1), _ignoreMonster),
+                      new Square(new Monster('healer',-1,-1), _ignoreMonster),
+                      new Square(new Monster('axeman',-1,-1), _ignoreMonster),
+                      new Square(new Monster('spearman',-1,-1), _ignoreMonster),
+                    ]),
+                    _die_row('red'),
+                    _die_row('green'),
+                    _die_row('blue'),
+                    _die_row('purple'),
+                    _die_row('black'),
+                  ],
+                  border: new TableBorder.all(width: 3.0),
+                        ),
+            ]));
   }
 }
 
 class Square extends StatelessWidget {
-  String name;
-  int hp;
-  Square(String this.name, int this.hp) {
+  Monster monster = null;
+  int x;
+  int y;
+  dynamic handleMonster;
+  bool am_odd() {
+    return x + y & 1 == 1;
   }
-  Square.empty(bool odd) {
-    hp = 0;
-    if (odd) { hp = -1; }
-    name = '';
+  Square(Monster this.monster, this.handleMonster) {
+    x = monster.x;
+    y = monster.y;
   }
+  Square.empty(int this.x, int this.y, this.handleMonster);
+
+  void _handleMonster(Monster mon) {
+    handleMonster(mon, x, y);
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (hp == 0) {
-      return new Image.asset('images/black-0.png');
+    var background = new Image.asset('images/black-0.png');
+    if (am_odd()) background = new Image.asset('images/red-0.png');
+    if (monster == null) {
+      return new DragTarget<Monster>(
+          onAccept: _handleMonster,
+          builder: (BuildContext context, List<Monster> data, List<dynamic> rejected) {
+        return background;
+      });
     }
-    if (hp == -1) {
-      return new Image.asset('images/red-0.png');
-    }
-    return new Image.asset('images/${name}-${hp}.png');
+    return new Draggable<Monster>(
+        data: monster,
+        child: new Image.asset('images/${monster.name}-${monster.hp}.png'),
+        childWhenDragging: background,
+        feedback: new Container(
+            width: 50.0,
+            height: 50.0,
+            child: new Image.asset('images/${monster.name}-${monster.hp}.png')),
+        maxSimultaneousDrags: 1,
+                                  );
   }
 }
