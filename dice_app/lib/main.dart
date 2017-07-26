@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'dice.dart';
+
 void main() {
   runApp(new DiceApp());
 }
@@ -34,13 +36,26 @@ class Monster {
   int hp;
   int x;
   int y;
-  Monster(String this.name, int this.x, int this.y) {
-    this.hp = 6;
+  String moves;
+  Monster(String this.name) {
+    x = -1;
+    y = -1;
+    hp = 6;
+    moves = all_monsters[this.name];
   }
   bool legalMove(int newx, int newy) {
     if (x < 0 || y < 0) { return true; }
+    if (x == newx && y == newy) {
+      return false;
+    }
     if ((x-newx).abs() > 1 || (y-newy).abs() > 1) {
       return false;
+    }
+    if (x != newx && y != newy) {
+      return moves.contains('*') || moves.contains('x');
+    }
+    if (x != newx || y != newy) {
+      return moves.contains('*') || moves.contains('+');
     }
     return true;
   }
@@ -95,12 +110,12 @@ class _BoardState extends State<Board> {
               new Table(
                   children: <TableRow>[
                     new TableRow(children: <Widget>[
-                      new Square(new Monster('mage',-1,-1), _ignoreMonster),
-                      new Square(new Monster('archer',-1,-1), _ignoreMonster),
-                      new Square(new Monster('swordsman',-1,-1), _ignoreMonster),
-                      new Square(new Monster('healer',-1,-1), _ignoreMonster),
-                      new Square(new Monster('axeman',-1,-1), _ignoreMonster),
-                      new Square(new Monster('spearman',-1,-1), _ignoreMonster),
+                      new Square(new Monster('mage'), _ignoreMonster),
+                      new Square(new Monster('archer'), _ignoreMonster),
+                      new Square(new Monster('swordsman'), _ignoreMonster),
+                      new Square(new Monster('healer'), _ignoreMonster),
+                      new Square(new Monster('axeman'), _ignoreMonster),
+                      new Square(new Monster('spearman'), _ignoreMonster),
                     ]),
                     _die_row('red'),
                     _die_row('green'),

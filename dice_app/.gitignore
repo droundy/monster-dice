@@ -10,3 +10,4 @@ pubspec.lock
 .flutter-plugins
 pubspec.yaml
 images
+lib/dice.dart
