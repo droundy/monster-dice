@@ -11,7 +11,10 @@ import dice
 with open('dice_app/lib/dice.dart', 'w') as f:
     f.write('var all_monsters = {')
     for monster in dice.monsters:
-        f.write('    "{}": "{}",\n'.format(monster['name'], monster['move']))
+        f.write('    "{}": ['.format(monster['name']))
+        for m in monster['move']:
+            f.write('"{}",'.format(m))
+        f.write('],\n')
     f.write('};\n\n')
     f.write('var all_actions = {')
     for action in dice.actions:

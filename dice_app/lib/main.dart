@@ -36,7 +36,7 @@ class Monster {
   int hp;
   int x;
   int y;
-  String moves;
+  List<String> moves;
   Monster(String this.name) {
     x = -1;
     y = -1;
