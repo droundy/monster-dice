@@ -111,8 +111,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                            new Square('dragon', 1),
                                            new Square('dragon', 1),
                                            new Square('dragon', 1),
-                                           new Square.empty(),
-                                           new Square.empty(),
+                                           new Square.empty(true),
+                                           new Square.empty(false),
                                            new Square('dragon', 3)]),
                     _die_row('dragon'),
                     _die_row('troll'),
@@ -181,7 +181,7 @@ class _BoardState extends State<Board> {
     for (var i=0;i<6;i++) {
       squares[i] = new List(6);
       for (var j=0;j<6;j++) {
-        squares[i][j] = new Square.empty();
+        squares[i][j] = new Square.empty(i + j & 1 == 1);
       }
     }
     monsters.forEach((m) => squares[m.x][m.y] = new Square(m.name, m.hp));
@@ -214,14 +214,18 @@ class Square extends StatelessWidget {
   int hp;
   Square(String this.name, int this.hp) {
   }
-  Square.empty() {
+  Square.empty(bool odd) {
     hp = 0;
+    if (odd) { hp = -1; }
     name = '';
   }
   @override
   Widget build(BuildContext context) {
     if (hp == 0) {
-      return new Container(width:50.0, height: 50.0);
+      return new Image.asset('images/black-0.png');
+    }
+    if (hp == -1) {
+      return new Image.asset('images/red-0.png');
     }
     return new Image.asset('images/${name}-${hp}.png');
   }

@@ -234,6 +234,8 @@ def symbol(tok, rad, x, y, backcolor):
 def positions(side):
     sz = 1.8
     f = 0.95
+    if side == 0:
+        return []
     if side == 1:
         return [(0,0,f*sz)]
     if side == 2:
@@ -316,7 +318,8 @@ elif sys.argv[1] == 'monster':
         plt.savefig('sides/{}-{}.pdf'.format(monster['name'],side))
         plt.savefig('sides/{}-{}.png'.format(monster['name'],side), dpi=94)
         plt.savefig('upload/{}-{}[2].png'.format(monster['name'],side), dpi=94)
-        imsz = 1.0
+    imsz = 1.0
+    for side in [1,2,3,4,5,6]:
         plt.cla()
         plotme(monster, side)
         plt.savefig('dice_app/images/{}-{}.png'.format(monster['name'],side), dpi=300)
@@ -334,6 +337,7 @@ elif sys.argv[1] == 'action':
         plt.savefig('sides/{}-{}.png'.format(action['color'],side), dpi=94)
         plt.savefig('upload/{}-{}[{}].png'.format(action['color'],side,action['count']),
                     dpi=94)
+    for side in range(0,7):
         imsz = 1.0
         plt.clf()
         plt.xlim(-imsz,imsz)

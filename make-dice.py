@@ -31,7 +31,7 @@ for action in dice.actions:
     fac.write('''| python3 die.py action {}
 c .pyc
 '''.format(repr(json.dumps(action, sort_keys=True))))
-    for side in range(1,7):
+    for side in range(0,7):
         pubspec.write('    - {}-{}.png\n'.format(action['color'], side) )
 
 with open('paper.tex','w') as f:
