@@ -37,6 +37,13 @@ class Monster {
   Monster(String this.name, int this.x, int this.y) {
     this.hp = 6;
   }
+  bool legalMove(int newx, int newy) {
+    if (x < 0 || y < 0) { return true; }
+    if ((x-newx).abs() > 1 || (y-newy).abs() > 1) {
+      return false;
+    }
+    return true;
+  }
 }
 
 class Board extends StatefulWidget {
@@ -124,6 +131,9 @@ class Square extends StatelessWidget {
   void _handleMonster(Monster mon) {
     handleMonster(mon, x, y);
   }
+  bool _monsterMoveOk(Monster mon) {
+    return mon.legalMove(x, y);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +142,7 @@ class Square extends StatelessWidget {
     if (monster == null) {
       return new DragTarget<Monster>(
           onAccept: _handleMonster,
+          onWillAccept: _monsterMoveOk,
           builder: (BuildContext context, List<Monster> data, List<dynamic> rejected) {
         return background;
       });
