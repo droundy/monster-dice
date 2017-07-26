@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(new Board());
 }
 
 class MyApp extends StatelessWidget {
@@ -100,21 +100,31 @@ class _MyHomePageState extends State<MyHomePage> {
               '${_counter}',
               style: Theme.of(context).textTheme.display1,
             ),
+            new Board(),
             new FlatButton(onPressed: _incrementCounter,
                            child: new Image.asset('images/dragon-6.png',
                                                   width: 100.0,
                                                   height: 100.0,)),
             new Table(
                   children: <TableRow>[
+                                       new TableRow(children: <Widget>[
+                                           new Square('dragon', 1),
+                                           new Square('dragon', 1),
+                                           new Square('dragon', 1),
+                                           new Square.empty(),
+                                           new Square.empty(),
+                                           new Square('dragon', 3)]),
                     _die_row('dragon'),
                     _die_row('troll'),
                     _die_row('mage'),
+                                       ]..addAll(<TableRow>[
                     _die_row('red'),
                     _die_row('green'),
                     _die_row('blue'),
                     _die_row('purple'),
                     _die_row('black'),
-                  ],
+                                                           ]),
+                  border: new TableBorder.all(width: 3.0),
               ),
           ],
         ),
@@ -137,4 +147,82 @@ TableRow _die_row(String name) {
     new Image.asset('images/${name}-5.png'),
     new Image.asset('images/${name}-6.png'),
   ]);
+}
+
+class Monster {
+  String name;
+  int hp;
+  int x;
+  int y;
+  Monster(String this.name, int this.x, int this.y) {
+    this.hp = 6;
+  }
+}
+
+class Board extends StatefulWidget {
+  Board({Key key}) : super(key: key);
+
+  @override
+  _BoardState createState() => new _BoardState();
+}
+
+class _BoardState extends State<Board> {
+  List<Monster> monsters = [];
+
+  @override
+  Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance
+    // as done by the _incrementCounter method above.
+    // The Flutter framework has been optimized to make rerunning
+    // build methods fast, so that you can just rebuild anything that
+    // needs updating rather than having to individually change
+    // instances of widgets.
+    var squares = new List(6);
+    for (var i=0;i<6;i++) {
+      squares[i] = new List(6);
+      for (var j=0;j<6;j++) {
+        squares[i][j] = new Square.empty();
+      }
+    }
+    monsters.forEach((m) => squares[m.x][m.y] = new Square(m.name, m.hp));
+    return new Center(
+        // Center is a layout widget. It takes a single child and
+        // positions it in the middle of the parent.
+        child: new Column(
+                          children: <Widget>[
+                                             new Table(children: <TableRow>[new TableRow(children: squares[0]),
+                                                                            new TableRow(children: squares[1]),
+                                                                            new TableRow(children: squares[2]),
+                                                                            new TableRow(children: squares[3])],
+                                                       border: new TableBorder.all(width: 3.0),),
+                                             new Table(
+                                                       children: <TableRow>[_die_row('red'),
+                                                                            _die_row('green'),
+                                                                            _die_row('blue'),
+                                                                            _die_row('purple'),
+                                                                            _die_row('black'),
+                                                                            ],
+                                                       border: new TableBorder.all(width: 3.0),
+                                                       ),
+                                             ],
+                          ));
+  }
+}
+
+class Square extends StatelessWidget {
+  String name;
+  int hp;
+  Square(String this.name, int this.hp) {
+  }
+  Square.empty() {
+    hp = 0;
+    name = '';
+  }
+  @override
+  Widget build(BuildContext context) {
+    if (hp == 0) {
+      return new Container(width:50.0, height: 50.0);
+    }
+    return new Image.asset('images/${name}-${hp}.png');
+  }
 }
