@@ -304,6 +304,7 @@ def plotme(m, side):
 
 os.system('mkdir -p sides')
 os.system('mkdir -p upload')
+os.system('mkdir -p dice_app/images')
 
 if sys.argv[1] == 'colortest':
     (c,v) = eval(sys.argv[2])
@@ -315,6 +316,10 @@ elif sys.argv[1] == 'monster':
         plt.savefig('sides/{}-{}.pdf'.format(monster['name'],side))
         plt.savefig('sides/{}-{}.png'.format(monster['name'],side), dpi=94)
         plt.savefig('upload/{}-{}[2].png'.format(monster['name'],side), dpi=94)
+        imsz = 1.0
+        plt.cla()
+        plotme(monster, side)
+        plt.savefig('dice_app/images/{}-{}.png'.format(monster['name'],side), dpi=300)
 elif sys.argv[1] == 'action':
     action = eval(sys.argv[2])
     for side in range(1,7):
@@ -329,3 +334,12 @@ elif sys.argv[1] == 'action':
         plt.savefig('sides/{}-{}.png'.format(action['color'],side), dpi=94)
         plt.savefig('upload/{}-{}[{}].png'.format(action['color'],side,action['count']),
                     dpi=94)
+        imsz = 1.0
+        plt.clf()
+        plt.xlim(-imsz,imsz)
+        plt.ylim(-imsz,imsz)
+        plt.gca().set_position([0, 0, 1, 1])
+        plt.gca().set_facecolor(proper_color(action['color']))
+        for x,y,rad in positions(side):
+            symbol(action['sides'][side-1],rad,x,y,action['color'])
+        plt.savefig('dice_app/images/{}-{}.png'.format(action['color'],side), dpi=300)

@@ -97,12 +97,25 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             new Text(
-              'You have pushed the button this many times:',
-            ),
-            new Text(
               '${_counter}',
               style: Theme.of(context).textTheme.display1,
             ),
+            new FlatButton(onPressed: _incrementCounter,
+                           child: new Image.asset('images/dragon-6.png',
+                                                  width: 100.0,
+                                                  height: 100.0,)),
+            new Table(
+                  children: <TableRow>[
+                    _die_row('dragon'),
+                    _die_row('troll'),
+                    _die_row('mage'),
+                    _die_row('red'),
+                    _die_row('green'),
+                    _die_row('blue'),
+                    _die_row('purple'),
+                    _die_row('black'),
+                  ],
+              ),
           ],
         ),
       ),
@@ -113,4 +126,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+TableRow _die_row(String name) {
+  return new TableRow(children: <Widget>[
+    new Image.asset('images/${name}-1.png'),
+    new Image.asset('images/${name}-2.png'),
+    new Image.asset('images/${name}-3.png'),
+    new Image.asset('images/${name}-4.png'),
+    new Image.asset('images/${name}-5.png'),
+    new Image.asset('images/${name}-6.png'),
+  ]);
 }
