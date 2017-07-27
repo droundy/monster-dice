@@ -31,7 +31,7 @@ TableRow _die_row(String name) {
   ]);
 }
 
-Table _monster_table() {
+List<Table> _monster_table() {
   var rows = [];
   var total = [];
   all_monsters.forEach((name,moves) {
@@ -41,9 +41,8 @@ Table _monster_table() {
       total = [];
     }
   });
-  return new Table(
-      children: rows,
-      border: new TableBorder.all(width: 3.0));
+  return [new Table(children: [rows[0]], border: new TableBorder.all(width: 3.0)),
+          new Table(children: [rows[1]], border: new TableBorder.all(width: 3.0))];
 }
 
               // new Table(
@@ -134,20 +133,21 @@ class _BoardState extends State<Board> {
       }
     }
     monsters.forEach((m) => squares[m.x][m.y] = new Square(m, _handleMonster));
-    return new ConstrainedBox(
-        constraints: new BoxConstraints.expand(),
-        child: new Column(
-            children: <Widget>[
-              new Table(children: <TableRow>[
-                new TableRow(children: squares[0]),
-                new TableRow(children: squares[1]),
-                new TableRow(children: squares[2]),
-                new TableRow(children: squares[3]),
-                new TableRow(children: squares[4]),
-                new TableRow(children: squares[5])],
-                  border: new TableBorder.all(width: 3.0),),
-              _monster_table(),
-            ]));
+    var monster_choices = _monster_table();
+    return
+      new Column(
+          children: <Widget>[
+            monster_choices[0],
+            new Table(children: <TableRow>[
+              new TableRow(children: squares[0]),
+              new TableRow(children: squares[1]),
+              new TableRow(children: squares[2]),
+              new TableRow(children: squares[3]),
+              new TableRow(children: squares[4]),
+              new TableRow(children: squares[5])
+            ], border: new TableBorder.all(width: 3.0),),
+            monster_choices[1],
+          ]);
   }
 }
 
