@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 import 'dice.dart';
 
@@ -35,7 +36,7 @@ List<Table> _monster_table() {
   var rows = [];
   var total = [];
   all_monsters.forEach((name,moves) {
-    total.add(new Square(new Monster(name), (a) {}));
+    total.add(new Square(new Monster(name), (a) {}, PlacingMonsterState));
     if (total.length == 6) {
       rows.add(new TableRow(children: total));
       total = [];
@@ -43,6 +44,27 @@ List<Table> _monster_table() {
   });
   return [new Table(children: [rows[0]], border: new TableBorder.all(width: 3.0)),
           new Table(children: [rows[1]], border: new TableBorder.all(width: 3.0))];
+}
+
+List<Table> _action_table() {
+  return [
+    new Table(children: [new TableRow(children: [
+      new ActionSquare(new Action("black")),
+      new ActionSquare(new Action("blue")),
+      new ActionSquare(new Action("green")),
+      new ActionSquare(new Action("orange")),
+      new ActionSquare(new Action("yellow")),
+      new ActionSquare(new Action("red")),
+    ])], border: new TableBorder.all(width: 3.0)),
+    new Table(children: [new TableRow(children: [
+      new ActionSquare(new Action("black")),
+      new ActionSquare(new Action("blue")),
+      new ActionSquare(new Action("green")),
+      new ActionSquare(new Action("orange")),
+      new ActionSquare(new Action("white")),
+      new ActionSquare(new Action("purple")),
+    ])], border: new TableBorder.all(width: 3.0)),
+  ];
 }
 
               // new Table(
@@ -60,6 +82,7 @@ class Monster {
   int x;
   int y;
   List<String> moves;
+  List<Action> actions = [];
   Monster(String this.name) {
     x = -1;
     y = -1;
@@ -94,7 +117,12 @@ class Board extends StatefulWidget {
   _BoardState createState() => new _BoardState();
 }
 
+int PlacingMonsterState = 0;
+int PickingActionsState = 1;
+int MovingMonsterState = 2;
+
 class _BoardState extends State<Board> {
+  int _state = PlacingMonsterState;
   List<Monster> monsters = [];
 
   void _ignoreMonster(Monster m, int x, int y) {
@@ -115,6 +143,17 @@ class _BoardState extends State<Board> {
         monsters.add(m);
       }
     });
+    _updateState();
+  }
+  void _updateState() {
+    setState(() {
+      if (_state == PlacingMonsterState && monsters.length >= 12) {
+        print("${monsters.length} monsters is enough, switching state");
+        _state = PickingActionsState;
+      } else {
+        print("only have ${monsters.length} monsters");
+      }
+    });
   }
 
   @override
@@ -129,25 +168,39 @@ class _BoardState extends State<Board> {
     for (var i=0;i<6;i++) {
       squares[i] = new List(6);
       for (var j=0;j<6;j++) {
-        squares[i][j] = new Square.empty(i,j, _handleMonster);
+        squares[i][j] = new Square.empty(i,j, _handleMonster, _state);
       }
     }
-    monsters.forEach((m) => squares[m.x][m.y] = new Square(m, _handleMonster));
-    var monster_choices = _monster_table();
-    return
-      new Column(
-          children: <Widget>[
-            monster_choices[0],
-            new Table(children: <TableRow>[
-              new TableRow(children: squares[0]),
-              new TableRow(children: squares[1]),
-              new TableRow(children: squares[2]),
-              new TableRow(children: squares[3]),
-              new TableRow(children: squares[4]),
-              new TableRow(children: squares[5])
-            ], border: new TableBorder.all(width: 3.0),),
-            monster_choices[1],
-          ]);
+    monsters.forEach((m) => squares[m.x][m.y] = new Square(m, _handleMonster, _state));
+    var boardWidget = new Table(children: <TableRow>[
+      new TableRow(children: squares[0]),
+      new TableRow(children: squares[1]),
+      new TableRow(children: squares[2]),
+      new TableRow(children: squares[3]),
+      new TableRow(children: squares[4]),
+      new TableRow(children: squares[5])
+    ], border: new TableBorder.all(width: 3.0),);
+    if (_state == PlacingMonsterState) {
+      print("using monster placing $_state");
+      var monster_choices = _monster_table();
+      return
+        new Column(
+            children: <Widget>[
+              monster_choices[0],
+              boardWidget,
+              monster_choices[1],
+            ]);
+    } else {
+      print("using action picking");
+      var action_choices = _action_table();
+      return
+        new Column(
+            children: <Widget>[
+              action_choices[0],
+              boardWidget,
+              action_choices[1],
+            ]);
+    }
   }
 }
 
@@ -155,15 +208,17 @@ class Square extends StatelessWidget {
   Monster monster = null;
   int x;
   int y;
+  int state;
   dynamic handleMonster;
+  dynamic handleAction;
   bool am_odd() {
     return x + y & 1 == 1;
   }
-  Square(Monster this.monster, this.handleMonster) {
+  Square(Monster this.monster, this.handleMonster, int this.state) {
     x = monster.x;
     y = monster.y;
   }
-  Square.empty(int this.x, int this.y, this.handleMonster);
+  Square.empty(int this.x, int this.y, this.handleMonster, int this.state);
 
   void _handleMonster(Monster mon) {
     handleMonster(mon, x, y);
@@ -173,6 +228,16 @@ class Square extends StatelessWidget {
   }
   bool _monsterAttackOk(Monster mon) {
     return mon.legalAttack(x, y);
+  }
+
+  void _handleAction(Action action) {
+  }
+  bool _monsterActionOk(Action action) {
+    if (monster.actions.length > 0 &&
+        monster.actions[monster.actions.length-1].round < action.round) {
+      return false;
+    }
+    return monster.moves.contains(action) && monster.actions.length <= monster.hp;
   }
 
   @override
@@ -187,20 +252,61 @@ class Square extends StatelessWidget {
         return background;
       });
     }
-    return new Draggable<Monster>(
-        data: monster,
-        child: new DragTarget<Monster>(
-            onAccept: _handleMonster,
-            onWillAccept: _monsterAttackOk,
-            builder: (BuildContext context, List<Monster> data, List<dynamic> rejected) {
-          return new Image.asset('images/${monster.name}-${monster.hp}.png');
-        }),
+    if (state == PlacingMonsterState) {
+      return new Draggable<Monster>(
+          data: monster,
+          child: new DragTarget<Monster>(
+              onAccept: _handleMonster,
+              onWillAccept: _monsterAttackOk,
+              builder: (BuildContext context, List<Monster> data, List<dynamic> rejected) {
+            return new Image.asset('images/${monster.name}-${monster.hp}.png');
+          }),
+          childWhenDragging: background,
+          feedback: new Container(
+              width: 50.0,
+              height: 50.0,
+              child: new Image.asset('images/${monster.name}-${monster.hp}.png')),
+          maxSimultaneousDrags: 1,
+                                    );
+    } else if (state == PickingActionsState) {
+      return new DragTarget<Action>(
+          onAccept: _handleAction,
+          onWillAccept: _monsterActionOk,
+          builder: (BuildContext context, List<Action> data, List<dynamic> rejected) {
+        return new Image.asset('images/${monster.name}-${monster.hp}.png');
+      });
+    }
+  }
+}
+
+var rng = new Random();
+
+class Action {
+  String color;
+  int round;
+  String move;
+  Action(String this.color) {
+    round = rng.nextInt(6)+1;
+    print("random is $round, next is ${rng.nextInt(6)}, next is ${rng.nextInt(6)}");
+    move = all_actions[this.color][round-1];
+  }
+}
+
+class ActionSquare extends StatelessWidget {
+  Action action;
+  ActionSquare(Action this.action);
+
+  @override
+  Widget build(BuildContext context) {
+    var background = new Image.asset('images/black-0.png');
+    return new Draggable<Action>(
+        data: action,
+        child: new Image.asset('images/${action.color}-${action.round}.png'),
         childWhenDragging: background,
         feedback: new Container(
             width: 50.0,
             height: 50.0,
-            child: new Image.asset('images/${monster.name}-${monster.hp}.png')),
-        maxSimultaneousDrags: 1,
-                                  );
+            child: new Image.asset('images/${action.color}-${action.round}.png')),
+        maxSimultaneousDrags: 1);
   }
 }

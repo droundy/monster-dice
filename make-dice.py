@@ -18,7 +18,10 @@ with open('dice_app/lib/dice.dart', 'w') as f:
     f.write('};\n\n')
     f.write('var all_actions = {')
     for action in dice.actions:
-        f.write('    "{}": "{}",\n'.format(action['color'], action['sides']))
+        f.write('    "{}": ['.format(action['color']))
+        for m in action['sides']:
+            f.write('"{}",'.format(m))
+        f.write('],\n')
     f.write('};\n')
 
 pubspec = open('dice_app/pubspec.yaml', 'w');
