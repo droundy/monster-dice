@@ -3,3 +3,9 @@
 c .pyc
 
 | pdflatex paper.tex
+
+| inkscape playing-board.svg --export-dpi=300 --export-png=playing-board.png
+
+| inkscape monster-action-help.svg --export-dpi=300 --export-png=monster-action-help.png
+
+| inkscape human-action-help.svg --export-dpi=300 --export-png=human-action-help.png

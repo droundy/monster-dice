@@ -55,7 +55,7 @@ monsters = [
     {**blank,
      'name': 'spearman',
      'move': '+r++++',
-     'color': 'red',
+     'color': 'blue',
     },
     {**blank,
      'name': 'axeman',
