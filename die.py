@@ -89,13 +89,13 @@ def plotwing(sz, x0, y0, color):
 def plotretaliate(sz,x,y,color):
     theta = np.linspace(0, 0.8*2*np.pi, 200)
     r = np.zeros_like(theta) + sz/3
-    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=3*sz)
+    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=4*sz)
     theta = np.linspace(0.7*2*np.pi, 0.8*2*np.pi, 50)
     r = sz/3*(1 + (theta/theta.max()-1)*3)
-    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=3*sz)
+    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=4*sz)
     theta = np.linspace(0.71*2*np.pi, 0.8*2*np.pi, 50)
     r = sz/3*(1 - (theta/theta.max()-1)*3)
-    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=3*sz)
+    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=4*sz)
 
 def plotplus(sz, x, y, color, lw):
     plt.plot([x+sz/2, x-sz/2], [y,y], '-', lw=lw, color=color)
@@ -143,16 +143,20 @@ def plotx(sz, x, y, color, lw):
                  y+r*np.sin(np.linspace(theta+.2, theta,2)), '-', lw=lw, color=color)
 
 def plotpow(sz, x, y, color='w'):
-    theta = np.linspace(0, 2*np.pi, 21)
-    r = np.zeros_like(theta) + sz/2
-    r[::2] /= 2;
-    plt.plot(x+.3*r*np.cos(theta), y+.3*r*np.sin(theta), '-', lw=8*sz, color='white')
-    plt.plot(x+.6*r*np.cos(theta), y+.6*r*np.sin(theta), '-', lw=2.5*sz, color='yellow')
-    plt.plot(x+.8*r*np.cos(theta), y+.8*r*np.sin(theta), '-', lw=2.5*sz, color='orange')
-    if color == 'red':
-        plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', lw=2.5*sz, color='orange')
+    X,Y = np.meshgrid(np.linspace(-sz/2,sz/2,100), np.linspace(-sz/2,sz/2,100))
+    phi = np.arctan2(Y,X);
+    r = np.sqrt(X**2+Y**2)
+    dangle = np.pi/3.5
+    relr = r/sz*2
+    pointiness = (2+dangle)**4/(2 + phi % dangle)**4
+    back = phi % dangle < dangle/2
+    pointiness[back] = (2+dangle)**4/(2 + (-phi[back]) % dangle)**4
+    val = r*2/sz*pointiness;
+    val[val>1] = np.nan
+    if color in ['red', 'orange']:
+        plt.contourf(x+X,y+Y,val,cmap='autumn')
     else:
-        plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', lw=2.5*sz, color='red')
+        plt.contourf(x+X,y+Y,val,cmap='autumn_r')
 
 def plotstatue(sz, x, y, color='k'):
     theta = np.linspace(0, 2*np.pi, 121)
@@ -194,33 +198,33 @@ def symbol(tok, rad, x, y, backcolor):
         plotplus(rad,x,y, color, 2)
     elif tok == '#':
         plotplus(rad,x,y, color, 2)
-        plotpow(0.6*rad,x,y)
+        plotpow(0.6*rad,x,y, backcolor)
     elif tok == 'x':
         plotx(rad,x,y, color, 2)
     elif tok == 'X':
         plotx(rad,x,y, color, 2)
-        plotpow(0.6*rad,x,y)
+        plotpow(0.6*rad,x,y, backcolor)
     elif tok == '*':
         plotx(rad,x,y, color, 2)
         plotplus(rad,x,y, color, 2)
     elif tok == '@':
         plotx(rad,x,y, color, 2)
         plotplus(rad,x,y, color, 2)
-        plotpow(0.6*rad,x,y)
+        plotpow(0.6*rad,x,y, backcolor)
     elif tok == 'b':
         plotspecial(rad,x,y, color, 2)
         plotstatue(0.6*rad,x,y,'black')
     elif tok == '2':
-        plotpow(0.7*rad,x,y)
+        plotpow(0.7*rad,x,y, backcolor)
     elif tok == '3':
-        plotpow(0.7*rad,x,y)
+        plotpow(0.7*rad,x,y, backcolor)
     elif tok == 'W':
         plotwing(.9*rad, x, y, (.8,.8,.6))
     elif tok == 'R':
-        plotpow(0.7*rad,x,y)
+        plotpow(0.7*rad,x,y, backcolor)
     elif tok == 'r':
-        plotpow(0.7*rad,x,y)
-        plotretaliate(rad,x,y, color)
+        plotpow(rad,x,y, backcolor)
+        plotretaliate(0.8*rad,x,y, color)
     elif tok == 'H':
         plotheal(0.55*rad,x,y, 'red')
     elif tok == 'A':
@@ -229,11 +233,11 @@ def symbol(tok, rad, x, y, backcolor):
         plotspecial(rad,x,y, color, 2)
     elif tok == 'B':
         plotspecial(rad,x,y, color, 2)
-        plotpow(.5*rad,x+.25*rad,y, color)
-        plotpow(.5*rad,x-.25*rad,y, color)
-        plotpow(.5*rad,x,y+.25*rad, color)
-        plotpow(.5*rad,x,y-.25*rad, color)
-        plotpow(.5*rad,x,y, 'black')
+        plotpow(.5*rad,x+.25*rad,y, backcolor)
+        plotpow(.5*rad,x-.25*rad,y, backcolor)
+        plotpow(.5*rad,x,y+.25*rad, backcolor)
+        plotpow(.5*rad,x,y-.25*rad, backcolor)
+        plotpow(.5*rad,x,y, 'red')
     elif tok == 'f':
         plotspecial(rad,x,y, color, 2)
         plotwing(.9*rad, x, y, (.8,.8,.6))
