@@ -86,12 +86,13 @@ with open('paper.tex','w') as f:
         i += 1
     f.write(r'''
 
-    \noindent
+    \pagebreak\noindent
     \includegraphics[width=2.0in]{{monster-help}}
     \includegraphics[width=2.0in]{{human-help}}
     \includegraphics[width=2.0in]{{action-help}} \\
     \includegraphics[width=2.0in]{{monster-action-help}}
     \includegraphics[width=2.0in]{{human-action-help}}
+    \includegraphics[width=2.0in]{{more-action-help}}
 \end{document}
 
 ''')

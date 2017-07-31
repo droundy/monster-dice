@@ -31,7 +31,5 @@ c .pyc
 < sides/mage-1.png
 
 | inkscape action-help.svg --export-dpi=300 --export-png=action-help.png
-< sides/fighter-1.png
-< sides/archer-1.png
-< sides/healer-1.png
-< sides/mage-1.png
+
+| inkscape more-action-help.svg --export-dpi=300 --export-png=more-action-help.png

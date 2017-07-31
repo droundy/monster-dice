@@ -362,5 +362,5 @@ elif sys.argv[1] == 'action-help':
     plt.ylim(-imsz,imsz)
     plt.gca().set_position([0, 0, 1, 1])
     plt.gca().set_facecolor(proper_color(action['color']))
-    symbol(action['move'],1.8,0,0,action['color'])
+    symbol(action['move'],1.6,0,0,action['color'])
     plt.savefig('sides/{}.png'.format(action['name']), dpi=300)
