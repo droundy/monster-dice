@@ -148,9 +148,11 @@ def plotpow(sz, x, y, color='w'):
     r = np.sqrt(X**2+Y**2)
     dangle = np.pi/3.5
     relr = r/sz*2
-    pointiness = (2+dangle)**4/(2 + phi % dangle)**4
+    power = 8
+    constant = 4
+    pointiness = (constant+dangle)**power/(constant + phi % dangle)**power
     back = phi % dangle < dangle/2
-    pointiness[back] = (2+dangle)**4/(2 + (-phi[back]) % dangle)**4
+    pointiness[back] = (constant+dangle)**power/(constant + (-phi[back]) % dangle)**power
     val = r*2/sz*pointiness;
     val[val>1] = np.nan
     if color in ['red', 'orange']:
