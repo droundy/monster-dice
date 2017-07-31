@@ -50,6 +50,11 @@ c .pyc
     for side in range(0,7):
         pubspec.write('    - {}-{}.png\n'.format(action['color'], side) )
 
+for action in dice.action_descriptions:
+    fac.write('''| python3 die.py action-help {}
+c .pyc
+'''.format(repr(json.dumps(action, sort_keys=True))))
+
 with open('paper.tex','w') as f:
     f.write(r'''\documentclass[11pt]{article}
 
@@ -80,6 +85,13 @@ with open('paper.tex','w') as f:
             f.write('\\\\\n\\vspace{-2pt}')
         i += 1
     f.write(r'''
+
+    \noindent
+    \includegraphics[width=2.0in]{{monster-help}}
+    \includegraphics[width=2.0in]{{human-help}}
+    \includegraphics[width=2.0in]{{action-help}} \\
+    \includegraphics[width=2.0in]{{monster-action-help}}
+    \includegraphics[width=2.0in]{{human-action-help}}
 \end{document}
 
 ''')

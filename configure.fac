@@ -7,5 +7,31 @@ c .pyc
 | inkscape playing-board.svg --export-dpi=300 --export-png=playing-board.png
 
 | inkscape monster-action-help.svg --export-dpi=300 --export-png=monster-action-help.png
+< sides/red-1.png
+< sides/orange-1.png
+< sides/yellow-1.png
+< sides/black-1.png
 
 | inkscape human-action-help.svg --export-dpi=300 --export-png=human-action-help.png
+< sides/green-1.png
+< sides/blue-1.png
+< sides/white-1.png
+< sides/purple-1.png
+
+| inkscape monster-help.svg --export-dpi=300 --export-png=monster-help.png
+< sides/dragon-1.png
+< sides/troll-1.png
+< sides/wyvern-1.png
+< sides/basilisk-1.png
+
+| inkscape human-help.svg --export-dpi=300 --export-png=human-help.png
+< sides/fighter-1.png
+< sides/archer-1.png
+< sides/healer-1.png
+< sides/mage-1.png
+
+| inkscape action-help.svg --export-dpi=300 --export-png=action-help.png
+< sides/fighter-1.png
+< sides/archer-1.png
+< sides/healer-1.png
+< sides/mage-1.png

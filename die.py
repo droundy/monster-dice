@@ -66,15 +66,6 @@ def plotheart(sz,x00,y00,color):
         i-=1
     plt.fill_between(x00+x,y00+ybot,y00+ytop, facecolor=color)
 
-def plotrange(sz,color):
-    R = sz*.275/.5
-    x0 = .5
-    x = np.linspace(x0-R,R+x0,100)
-    dx = x[1]-x[0]
-    ytop =  np.sqrt(R**2 - (x-x0)**2) -.5
-    ybot = -np.sqrt(R**2 - (x-x0)**2) -.5
-    plt.fill_between(x,ybot,ytop, facecolor=color)
-
 def plotwing(sz, x0, y0, color):
     x = np.linspace(-sz*.6,sz*.6,100)
     X = abs(x/max(x))
@@ -121,14 +112,23 @@ def plotspecial(sz, x, y, color, lw):
     r = np.zeros_like(theta) + sz/2
     plt.plot(x+r*np.sin(theta), y+r*np.cos(theta), '-', color=color, lw=lw)
 
-def gridtwo(sz, x, y, color, lw):
-    sz *= .9 # leave a bit of space...
-    for off in [-.1, -.3, .1, .3]:
-        plt.plot([x+sz/2, x-sz/2], [y+sz*off,y+sz*off], '-', lw=lw, color=color)
-        plt.plot([x+sz*off, x+sz*off], [y+sz/2,y-sz/2], '-', lw=lw, color=color)
-    for off in [-.5,.5]:
-        plt.plot([x+sz*.3, x-sz*.3], [y+sz*off,y+sz*off], '-', lw=lw, color=color)
-        plt.plot([x+sz*off, x+sz*off], [y+sz*.3,y-sz*.3], '-', lw=lw, color=color)
+def gridtwo(sz, x0, y0, color, lw):
+    # sz *= .9 # leave a bit of space...
+    # for off in [-.1, -.3, .1, .3]:
+    #     plt.plot([x+sz/2, x-sz/2], [y+sz*off,y+sz*off], '-', lw=lw, color=color)
+    #     plt.plot([x+sz*off, x+sz*off], [y+sz/2,y-sz/2], '-', lw=lw, color=color)
+    # for off in [-.5,.5]:
+    #     plt.plot([x+sz*.3, x-sz*.3], [y+sz*off,y+sz*off], '-', lw=lw, color=color)
+    #     plt.plot([x+sz*off, x+sz*off], [y+sz*.3,y-sz*.3], '-', lw=lw, color=color)
+    R = sz*.9/2
+    Rmin = sz*.8/2
+    x = np.linspace(-R,R,200)
+    dx = x[1]-x[0]
+    ytop = np.sqrt(abs(R**2 - x**2))
+    ybot = np.sqrt(abs(Rmin**2 - x**2))
+    ybot[abs(x)>Rmin] = 0
+    plt.fill_between(x0+x,y0+ybot,y0+ytop, facecolor=color)
+    plt.fill_between(x0+x,y0-ybot,y0-ytop, facecolor=color)
 
 def plotx(sz, x, y, color, lw):
     rad = sz/2
@@ -154,6 +154,16 @@ def plotpow(sz, x, y, color='w'):
     else:
         plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', lw=2.5*sz, color='red')
 
+def plotstatue(sz, x, y, color='k'):
+    theta = np.linspace(0, 2*np.pi, 121)
+    r = np.zeros_like(theta) + sz/2
+    lw = 3*sz
+    plt.plot(x+.3*r*np.cos(theta), y+.7*r+.3*r*np.sin(theta), '-', lw=lw, color=color)
+    r = sz/2
+    plt.plot([x,x,x+r/3], [y+.4*r, y-.2*r, y-.9*r], '-', lw=lw, color=color)
+    plt.plot([x,x-r/3], [y-.2*r, y-.9*r], '-', lw=lw, color=color)
+    plt.plot([x-r/3,x+r/3], [y+0.2*r, y+0.2*r], '-', lw=lw, color=color)
+
 def plotteleport(sz, x, y):
     theta = np.linspace(0, 2*np.pi, 201)
     r = np.zeros_like(theta)+sz/5
@@ -175,6 +185,9 @@ def symbol(tok, rad, x, y, backcolor):
     color = 'white'
     if backcolor in light_colors:
         color = 'black'
+    if tok in 'RoFW32H':
+        gridtwo(rad,x,y, color, 1)
+
     if tok == 'P':
         plotpow(rad,x,y, backcolor)
     elif tok == '+':
@@ -194,25 +207,21 @@ def symbol(tok, rad, x, y, backcolor):
         plotx(rad,x,y, color, 2)
         plotplus(rad,x,y, color, 2)
         plotpow(0.6*rad,x,y)
+    elif tok == 'b':
+        plotspecial(rad,x,y, color, 2)
+        plotstatue(0.6*rad,x,y,'black')
     elif tok == '2':
-        gridtwo(rad,x,y, color, 1)
         plotpow(0.7*rad,x,y)
     elif tok == '3':
-        gridtwo(rad,x,y, color, 1)
         plotpow(0.7*rad,x,y)
-    elif tok == 'F':
-        gridtwo(rad,x,y, color, 1)
     elif tok == 'W':
-        gridtwo(rad,x,y, color, 1)
         plotwing(.9*rad, x, y, (.8,.8,.6))
     elif tok == 'R':
-        gridtwo(rad,x,y, color, 1)
         plotpow(0.7*rad,x,y)
     elif tok == 'r':
-        plotpow(0.8*rad, x, y)
+        plotpow(0.7*rad,x,y)
         plotretaliate(rad,x,y, color)
     elif tok == 'H':
-        gridtwo(rad,x,y, color, 1)
         plotheal(0.55*rad,x,y, 'red')
     elif tok == 'A':
         plotshield(rad,x,y, color)
@@ -228,8 +237,6 @@ def symbol(tok, rad, x, y, backcolor):
     elif tok == 'f':
         plotspecial(rad,x,y, color, 2)
         plotwing(.9*rad, x, y, (.8,.8,.6))
-    else:
-        plotpow(rad,x,y)
 
 def positions(side):
     sz = 1.8
@@ -347,3 +354,13 @@ elif sys.argv[1] == 'action':
         for x,y,rad in positions(side):
             symbol(action['sides'][side-1],rad,x,y,action['color'])
         plt.savefig('dice_app/images/{}-{}.png'.format(action['color'],side), dpi=300)
+elif sys.argv[1] == 'action-help':
+    action = eval(sys.argv[2])
+    imsz = 1.0
+    plt.figure(figsize=(2,2))
+    plt.xlim(-imsz,imsz)
+    plt.ylim(-imsz,imsz)
+    plt.gca().set_position([0, 0, 1, 1])
+    plt.gca().set_facecolor(proper_color(action['color']))
+    symbol(action['move'],1.8,0,0,action['color'])
+    plt.savefig('sides/{}.png'.format(action['name']), dpi=300)
