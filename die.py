@@ -54,11 +54,11 @@ def plotshield(sz,x0,y0,color):
     x = np.linspace(x0-sz/2,x0+sz/2,100)
     X = 2*(x-x0)/sz
     yshield = y0 + sz*(.5 - .6*(np.sqrt(abs(1-X**8))) + 0.5*(abs(X)-1))
-    plt.fill_between(x,yshield,y0+sz/2, facecolor=color)
+    plt.fill_between(x,yshield,y0+sz/2, facecolor=bestcolor[color])
 
 def plotheal(sz,x,y,color):
-    plt.fill_between([x+sz/2, x-sz/2], [y-sz/6]*2, [y+sz/6]*2,facecolor=color)
-    plt.fill_between([x+sz/6, x-sz/6], [y-sz/2]*2, [y+sz/2]*2,facecolor=color)
+    plt.fill_between([x+sz/2, x-sz/2], [y-sz/6]*2, [y+sz/6]*2,facecolor=bestcolor[color])
+    plt.fill_between([x+sz/6, x-sz/6], [y-sz/2]*2, [y+sz/2]*2,facecolor=bestcolor[color])
 
 def plotheart(sz,x00,y00,color):
     R = sz*.275/.5
@@ -100,28 +100,30 @@ def plotwing(sz, x0, y0, color):
 def plotretaliate(sz,x,y,color):
     theta = np.linspace(0, 0.8*2*np.pi, 200)
     r = np.zeros_like(theta) + sz/3
-    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=4*sz)
+    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=bestcolor[color], lw=4*sz)
     theta = np.linspace(0.7*2*np.pi, 0.8*2*np.pi, 50)
     r = sz/3*(1 + (theta/theta.max()-1)*3)
-    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=4*sz)
+    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=bestcolor[color], lw=4*sz)
     theta = np.linspace(0.71*2*np.pi, 0.8*2*np.pi, 50)
     r = sz/3*(1 - (theta/theta.max()-1)*3)
-    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=color, lw=4*sz)
+    plt.plot(x+r*np.cos(theta), y+r*np.sin(theta), '-', color=bestcolor[color], lw=4*sz)
 
 def plotplus(sz, x, y, color, lw):
-    plt.plot([x+sz/2, x-sz/2], [y,y], '-', lw=lw, color=color)
-    plt.plot([x, x], [y+sz/2,y-sz/2], '-', lw=lw, color=color)
+    plt.plot([x+sz/2, x-sz/2], [y,y], '-', lw=lw, color=bestcolor[color])
+    plt.plot([x, x], [y+sz/2,y-sz/2], '-', lw=lw, color=bestcolor[color])
     r = np.linspace(0.7*sz/2, sz/2, 2)
     for theta in np.arange(0, 2*np.pi, np.pi/2):
         plt.plot(x+r*np.cos(np.linspace(theta-.2, theta,2)),
-                 y+r*np.sin(np.linspace(theta-.2, theta,2)), '-', lw=lw, color=color)
+                 y+r*np.sin(np.linspace(theta-.2, theta,2)),
+                 '-', lw=lw, color=bestcolor[color])
         plt.plot(x+r*np.cos(np.linspace(theta+.2, theta,2)),
-                 y+r*np.sin(np.linspace(theta+.2, theta,2)), '-', lw=lw, color=color)
+                 y+r*np.sin(np.linspace(theta+.2, theta,2)),
+                 '-', lw=lw, color=bestcolor[color])
 
 def plotspecial(sz, x, y, color, lw):
     theta = np.linspace(0,  2*np.pi, 4)
     r = np.zeros_like(theta) + sz/2
-    plt.plot(x+r*np.sin(theta), y+r*np.cos(theta), '-', color=color, lw=lw)
+    plt.plot(x+r*np.sin(theta), y+r*np.cos(theta), '-', color=bestcolor[color], lw=lw)
 
 def gridtwo(sz, x0, y0, color, lw):
     # sz *= .9 # leave a bit of space...
@@ -138,22 +140,24 @@ def gridtwo(sz, x0, y0, color, lw):
     ytop = np.sqrt(abs(R**2 - x**2))
     ybot = np.sqrt(abs(Rmin**2 - x**2))
     ybot[abs(x)>Rmin] = 0
-    plt.fill_between(x0+x,y0+ybot,y0+ytop, facecolor=color)
-    plt.fill_between(x0+x,y0-ybot,y0-ytop, facecolor=color)
+    plt.fill_between(x0+x,y0+ybot,y0+ytop, facecolor=bestcolor[color])
+    plt.fill_between(x0+x,y0-ybot,y0-ytop, facecolor=bestcolor[color])
 
 def plotx(sz, x, y, color, lw):
     rad = sz/2
     sz /= np.sqrt(2)
-    plt.plot([x+sz/2, x-sz/2], [y+sz/2,y-sz/2], '-', lw=lw, color=color)
-    plt.plot([x+sz/2, x-sz/2], [y-sz/2,y+sz/2], '-', lw=lw, color=color)
+    plt.plot([x+sz/2, x-sz/2], [y+sz/2,y-sz/2], '-', lw=lw, color=bestcolor[color])
+    plt.plot([x+sz/2, x-sz/2], [y-sz/2,y+sz/2], '-', lw=lw, color=bestcolor[color])
     r = np.linspace(0.7*rad, rad, 2)
     for theta in np.arange(np.pi/4, 2*np.pi, np.pi/2):
         plt.plot(x+r*np.cos(np.linspace(theta-.2, theta,2)),
-                 y+r*np.sin(np.linspace(theta-.2, theta,2)), '-', lw=lw, color=color)
+                 y+r*np.sin(np.linspace(theta-.2, theta,2)),
+                 '-', lw=lw, color=bestcolor[color])
         plt.plot(x+r*np.cos(np.linspace(theta+.2, theta,2)),
-                 y+r*np.sin(np.linspace(theta+.2, theta,2)), '-', lw=lw, color=color)
+                 y+r*np.sin(np.linspace(theta+.2, theta,2)),
+                 '-', lw=lw, color=bestcolor[color])
 
-def plotpow(sz, x, y, color='w'):
+def plotpow(sz, x, y, color='white'):
     X,Y = np.meshgrid(np.linspace(-sz/2,sz/2,100), np.linspace(-sz/2,sz/2,100))
     phi = np.arctan2(Y,X);
     r = np.sqrt(X**2+Y**2)
@@ -171,15 +175,16 @@ def plotpow(sz, x, y, color='w'):
     else:
         plt.contourf(x+X,y+Y,val,cmap='autumn_r')
 
-def plotstatue(sz, x, y, color='k'):
+def plotstatue(sz, x, y, color='black'):
     theta = np.linspace(0, 2*np.pi, 121)
     r = np.zeros_like(theta) + sz/2
     lw = 3*sz
-    plt.plot(x+.3*r*np.cos(theta), y+.7*r+.3*r*np.sin(theta), '-', lw=lw, color=color)
+    plt.plot(x+.3*r*np.cos(theta), y+.7*r+.3*r*np.sin(theta),
+             '-', lw=lw, color=bestcolor[color])
     r = sz/2
-    plt.plot([x,x,x+r/3], [y+.4*r, y-.2*r, y-.9*r], '-', lw=lw, color=color)
-    plt.plot([x,x-r/3], [y-.2*r, y-.9*r], '-', lw=lw, color=color)
-    plt.plot([x-r/3,x+r/3], [y+0.2*r, y+0.2*r], '-', lw=lw, color=color)
+    plt.plot([x,x,x+r/3], [y+.4*r, y-.2*r, y-.9*r], '-', lw=lw, color=bestcolor[color])
+    plt.plot([x,x-r/3], [y-.2*r, y-.9*r], '-', lw=lw, color=bestcolor[color])
+    plt.plot([x-r/3,x+r/3], [y+0.2*r, y+0.2*r], '-', lw=lw, color=bestcolor[color])
 
 def plotteleport(sz, x, y):
     theta = np.linspace(0, 2*np.pi, 201)
@@ -301,11 +306,6 @@ def positions(side):
             p.append((r*np.sin(i*2*np.pi/5), r*np.cos(i*2*np.pi/5), z))
         return p
 
-def proper_color(color):
-    if color == 'orange':
-        return (1, 0.4, 0)
-    return color
-
 def plotme(m, side):
     name = m['name']
     plt.close('all')
@@ -316,7 +316,7 @@ def plotme(m, side):
     directioncolor = 'white'
     if m['color'] in light_colors:
         directioncolor = 'black'
-    plt.gca().set_facecolor(proper_color(m['color']))
+    plt.gca().set_facecolor(bestcolor[m['color']])
     for i in range(side):
         x,y,rad = positions(side)[i]
         symbol(m['move'][i],rad,x,y,m['color'])
@@ -324,7 +324,7 @@ def plotme(m, side):
         text = plt.text(0, 0, name, color=directioncolor,
                         ha='center', va='center', size=14)
         text.set_path_effects([path_effects.Stroke(linewidth=1/w, alpha=w,
-                                                   foreground=proper_color(m['color'])),
+                                                   foreground=bestcolor[m['color']]),
                            path_effects.Normal()])
 
 
@@ -355,7 +355,7 @@ elif sys.argv[1] == 'action':
         plt.xlim(-imsz,imsz)
         plt.ylim(-imsz,imsz)
         plt.gca().set_position([0, 0, 1, 1])
-        plt.gca().set_facecolor(proper_color(action['color']))
+        plt.gca().set_facecolor(bestcolor[action['color']])
         for x,y,rad in positions(side):
             symbol(action['sides'][side-1],rad,x,y,action['color'])
         plt.savefig('sides/{}-{}.png'.format(action['color'],side), dpi=94)
@@ -367,7 +367,7 @@ elif sys.argv[1] == 'action':
         plt.xlim(-imsz,imsz)
         plt.ylim(-imsz,imsz)
         plt.gca().set_position([0, 0, 1, 1])
-        plt.gca().set_facecolor(proper_color(action['color']))
+        plt.gca().set_facecolor(bestcolor[action['color']])
         for x,y,rad in positions(side):
             symbol(action['sides'][side-1],rad,x,y,action['color'])
         plt.savefig('dice_app/images/{}-{}.png'.format(action['color'],side), dpi=300)
@@ -378,6 +378,6 @@ elif sys.argv[1] == 'action-help':
     plt.xlim(-imsz,imsz)
     plt.ylim(-imsz,imsz)
     plt.gca().set_position([0, 0, 1, 1])
-    plt.gca().set_facecolor(proper_color(action['color']))
+    plt.gca().set_facecolor(bestcolor[action['color']])
     symbol(action['move'],1.6,0,0,action['color'])
     plt.savefig('sides/{}.png'.format(action['name']), dpi=300)
