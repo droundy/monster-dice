@@ -6,6 +6,13 @@ c .pyc
 
 | inkscape playing-board.svg --export-dpi=300 --export-png=playing-board.png
 
+| inkscape human-board.svg --export-dpi=300 --export-png=human-board.png
+
+| inkscape monster-board.svg --export-dpi=300 --export-png=monster-board.png
+
+| inkscape turn.svg --export-dpi=300 --export-png=turn.png
+| inkscape rules.svg --export-dpi=300 --export-png=rules.png
+
 | inkscape monster-action-help.svg --export-dpi=300 --export-png=monster-action-help.png
 < sides/red-1.png
 < sides/orange-1.png

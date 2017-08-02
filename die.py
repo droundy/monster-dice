@@ -12,6 +12,17 @@ imsz = 1.25
 safesz = 1.0
 lw = .25
 
+bestcolor = {
+    'black': '#000000',
+    'yellow': "#ffe600",
+    'orange': "#ff6600",
+    'red': '#ff0000',
+    'white': '#ffffff',
+    'green': '#00b300',
+    'blue': '#0000ff',
+    'purple': '#800080',
+}
+
 def colortest(name, colors):
     plt.close('all')
     plt.figure(figsize=(2,2))
