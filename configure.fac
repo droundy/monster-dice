@@ -13,6 +13,9 @@ c .pyc
 | inkscape turn.svg --export-dpi=300 --export-png=turn.png
 | inkscape rules.svg --export-dpi=300 --export-png=rules.png
 
+| inkscape small-pro-box-top.svg --export-dpi=400 --export-png=small-pro-box-top.png
+| inkscape small-pro-box-bottom.svg --export-dpi=400 --export-png=small-pro-box-bottom.png
+
 | inkscape monster-action-help.svg --export-dpi=300 --export-png=monster-action-help.png
 < sides/red-1.png
 < sides/orange-1.png
