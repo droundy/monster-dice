@@ -37,7 +37,7 @@ List<Table> _monster_table() {
   var total = [];
   all_monsters.forEach((name,moves) {
     total.add(new Square(new Monster(name), (a) {}, PlacingMonsterState));
-    if (total.length == 6) {
+    if (total.length == 4) {
       rows.add(new TableRow(children: total));
       total = [];
     }
@@ -50,19 +50,15 @@ List<Table> _action_table() {
   return [
     new Table(children: [new TableRow(children: [
       new ActionSquare(new Action("black")),
-      new ActionSquare(new Action("blue")),
-      new ActionSquare(new Action("green")),
+      new ActionSquare(new Action("red")),
       new ActionSquare(new Action("orange")),
       new ActionSquare(new Action("yellow")),
-      new ActionSquare(new Action("red")),
     ])], border: new TableBorder.all(width: 3.0)),
     new Table(children: [new TableRow(children: [
-      new ActionSquare(new Action("black")),
+      new ActionSquare(new Action("purple")),
       new ActionSquare(new Action("blue")),
       new ActionSquare(new Action("green")),
-      new ActionSquare(new Action("orange")),
       new ActionSquare(new Action("white")),
-      new ActionSquare(new Action("purple")),
     ])], border: new TableBorder.all(width: 3.0)),
   ];
 }
@@ -164,9 +160,9 @@ class _BoardState extends State<Board> {
     // build methods fast, so that you can just rebuild anything that
     // needs updating rather than having to individually change
     // instances of widgets.
-    var squares = new List(6);
+    var squares = new List(4);
     for (var i=0;i<6;i++) {
-      squares[i] = new List(6);
+      squares[i] = new List(4);
       for (var j=0;j<6;j++) {
         squares[i][j] = new Square.empty(i,j, _handleMonster, _state);
       }
@@ -177,8 +173,6 @@ class _BoardState extends State<Board> {
       new TableRow(children: squares[1]),
       new TableRow(children: squares[2]),
       new TableRow(children: squares[3]),
-      new TableRow(children: squares[4]),
-      new TableRow(children: squares[5])
     ], border: new TableBorder.all(width: 3.0),);
     if (_state == PlacingMonsterState) {
       print("using monster placing $_state");
