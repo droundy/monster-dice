@@ -158,7 +158,7 @@ def plotx(sz, x, y, color, lw):
                  '-', lw=lw, color=bestcolor[color])
 
 def plotpow(sz, x, y, color='white'):
-    X,Y = np.meshgrid(np.linspace(-sz/2,sz/2,100), np.linspace(-sz/2,sz/2,100))
+    X,Y = np.meshgrid(np.linspace(-sz/2,sz/2,100), np.linspace(-sz/2,sz/2,9000))
     phi = np.arctan2(Y,X);
     r = np.sqrt(X**2+Y**2)
     dangle = np.pi/3.5
@@ -231,7 +231,7 @@ def symbol(tok, rad, x, y, backcolor):
         plotpow(0.6*rad,x,y, backcolor)
     elif tok == 'b':
         plotspecial(rad,x,y, color, 2)
-        plotstatue(0.6*rad,x,y,'black')
+        plotstatue(0.6*rad,x,y,color)
     elif tok == '2':
         plotpow(0.7*rad,x,y, backcolor)
     elif tok == '3':
@@ -341,13 +341,14 @@ elif sys.argv[1] == 'monster':
         plotme(monster, side)
         plt.savefig('sides/{}-{}.pdf'.format(monster['name'],side))
         plt.savefig('sides/{}-{}.png'.format(monster['name'],side), dpi=94)
+        plt.savefig('sides/{}-{}-huge.png'.format(monster['name'],side), dpi=900)
         plt.savefig('upload/{}-{}[2].png'.format(monster['name'],side), dpi=94)
     imsz = 1.0
     for side in [1,2,3,4,5,6]:
         plt.cla()
         plotme(monster, side)
         plt.savefig('dice_app/images/{}-{}.png'.format(monster['name'],side), dpi=300)
-elif sys.argv[1] == 'action':
+elif sys.argv[1] == 'action': 
     action = eval(sys.argv[2])
     for side in range(1,7):
         plt.close('all')
@@ -381,3 +382,11 @@ elif sys.argv[1] == 'action-help':
     plt.gca().set_facecolor(bestcolor[action['color']])
     symbol(action['move'],1.6,0,0,action['color'])
     plt.savefig('sides/{}.png'.format(action['name']), dpi=300)
+    for color in ['black', 'red', 'orange', 'purple', 'green', 'white', 'yellow', 'blue']:
+            plt.figure(figsize=(2,2))
+            plt.xlim(-imsz,imsz)
+            plt.ylim(-imsz,imsz)
+            plt.gca().set_position([0, 0, 1, 1])
+            plt.gca().set_facecolor(bestcolor[color])
+            symbol(action['move'],1.6,0,0,color)
+            plt.savefig('sides/{}-{}-huge.png'.format(color, action['name']), dpi=900)
