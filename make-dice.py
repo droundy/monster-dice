@@ -87,14 +87,16 @@ with open('paper.tex','w') as f:
     f.write(r'''
 
     \pagebreak\noindent
-    \includegraphics[width=1.5in]{{monster-board}}
-    \includegraphics[width=1.5in]{{monster-help}}
-    \includegraphics[width=1.5in]{{monster-action-help}}
-    \includegraphics[width=1.5in]{{action-help}} \\
-    \includegraphics[width=1.5in]{{human-board}}
-    \includegraphics[width=1.5in]{{human-help}}
-    \includegraphics[width=1.5in]{{human-action-help}}
-    \includegraphics[width=1.5in]{{more-action-help}}
+    \includegraphics[width=2.5in]{{human-help}}
+    \includegraphics[width=2.5in]{{monster-help}}\\
+    \includegraphics[width=2.5in]{{human-action-help}}
+    \includegraphics[width=2.5in]{{monster-action-help}}\\
+    \includegraphics[width=2.5in]{{action-help}}
+    \includegraphics[width=2.5in]{{more-action-help}} \\
+    \includegraphics[width=2.5in]{{rules}}
+    \includegraphics[width=2.5in]{{turn}} \\
+    \includegraphics[width=2.5in]{{human-board}}
+    \includegraphics[width=2.5in]{{monster-board}}
 \end{document}
 
 ''')
